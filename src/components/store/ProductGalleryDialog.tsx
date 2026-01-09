@@ -58,12 +58,12 @@ export function ProductGalleryDialog({
         </button>
 
         {/* Main image container - uses flex to center image and leave space for thumbnails */}
-        <div className="flex flex-col h-full w-full">
-          <div className="flex-1 flex items-center justify-center p-4 pb-24 min-h-0">
+        <div className="flex flex-col h-full w-full overflow-hidden">
+          <div className="flex-1 flex items-center justify-center p-4 pb-28 overflow-hidden">
             <img
               src={images[currentIndex]}
               alt={`${productName} - ${currentIndex + 1}`}
-              className="h-full w-auto object-contain"
+              className="max-h-full max-w-full object-contain"
             />
           </div>
 
