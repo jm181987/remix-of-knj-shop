@@ -5,7 +5,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import knjLogo from "@/assets/knj-logo.png";
+import musaLogo from "@/assets/knj-logo.png";
 
 interface StoreHeaderProps {
   storeName: string;
@@ -35,7 +35,7 @@ export function StoreHeader({ storeName }: StoreHeaderProps) {
       <div className="container mx-auto flex h-18 items-center justify-between px-4 py-3">
         <Link to="/store" className="group flex items-center gap-3">
           <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-white shadow-lg transition-transform duration-300 group-hover:scale-105 overflow-hidden">
-            <img src={knjLogo} alt="KNJ Shop" className="h-10 w-10 object-contain" />
+            <img src={musaLogo} alt="Musa Fitness" className="h-10 w-10 object-contain" />
           </div>
           <span className="text-xl font-bold tracking-tight transition-colors group-hover:text-primary">
             {storeName}
