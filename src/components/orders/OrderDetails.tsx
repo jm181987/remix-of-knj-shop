@@ -47,26 +47,14 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
 
   const TRACKING_BASE_URL = "https://www.ues.com.uy/rastreo_paquete.html";
 
-  // Extract tracking number from URL or use directly when order loads
+  // Load tracking number when order loads
   useEffect(() => {
     if (order?.tracking_url) {
-      // If it's the full UES URL, extract just the tracking number
-      // Otherwise use whatever is stored (for backwards compatibility)
-      const storedValue = order.tracking_url;
-      if (storedValue.includes("ues.com.uy")) {
-        // Try to extract number from URL params or just show the stored value
-        setTrackingNumber(storedValue);
-      } else {
-        setTrackingNumber(storedValue);
-      }
+      setTrackingNumber(order.tracking_url);
     } else {
       setTrackingNumber("");
     }
   }, [order?.tracking_url]);
-
-  const getFullTrackingUrl = () => {
-    return `${TRACKING_BASE_URL}?guia=${trackingNumber.trim()}`;
-  };
 
   const handleSaveTracking = async (andNotify: boolean = false) => {
     if (!trackingNumber.trim()) {
@@ -77,10 +65,9 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
     setIsSaving(true);
     try {
       const previousStatus = order?.status;
-      const fullTrackingUrl = getFullTrackingUrl();
       
-      // Update tracking URL and optionally change status to shipped
-      const updateData: any = { tracking_url: fullTrackingUrl };
+      // Save only the tracking number
+      const updateData: any = { tracking_url: trackingNumber.trim() };
       
       // If order is paid or preparing, auto-change to shipped when adding tracking
       if (order?.status === "paid" || order?.status === "preparing") {
@@ -102,13 +89,12 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
           .eq("order_id", orderId);
       }
 
-      toast.success("Link de tracking guardado");
+      toast.success("Número de guía guardado");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["order", orderId] });
 
       // Send WhatsApp notification if requested
       if (andNotify && order?.customers?.phone) {
-        const baseUrl = window.location.origin;
         await sendNotification({
           orderId: order.id,
           orderNumber: order.id.slice(0, 8),
@@ -117,7 +103,8 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
           status: updateData.status || order.status,
           total: order.total,
           deliveryAddress: order.delivery_address,
-          trackingUrl: fullTrackingUrl,
+          trackingUrl: TRACKING_BASE_URL,
+          trackingCode: trackingNumber.trim(),
         }, previousStatus);
       }
     } catch (error: any) {
@@ -179,18 +166,13 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                   <Button
                     variant="outline"
                     size="icon"
-                    onClick={() => window.open(order.tracking_url, "_blank")}
+                    onClick={() => window.open(`${TRACKING_BASE_URL}?guia=${order.tracking_url}`, "_blank")}
                     title="Abrir rastreo"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 )}
               </div>
-              {trackingNumber.trim() && (
-                <p className="text-xs text-muted-foreground">
-                  Link: {getFullTrackingUrl()}
-                </p>
-              )}
               <div className="flex gap-2">
                 <Button
                   variant="outline"
@@ -211,7 +193,7 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                   Guardar y Notificar
                 </Button>
               </div>
-              {order.tracking_url && !order.tracking_url.includes(trackingNumber.trim()) && trackingNumber.trim() && (
+              {order.tracking_url && order.tracking_url !== trackingNumber.trim() && trackingNumber.trim() && (
                 <p className="text-xs text-amber-500">Hay cambios sin guardar</p>
               )}
             </div>

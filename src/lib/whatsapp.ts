@@ -9,6 +9,7 @@ export interface WhatsAppNotificationData {
   total?: number;
   deliveryAddress?: string;
   trackingUrl?: string;
+  trackingCode?: string;
   estimatedDelivery?: string;
   driverName?: string;
   driverPhone?: string;
@@ -16,8 +17,11 @@ export interface WhatsAppNotificationData {
 }
 
 const getTrackingInfo = (data: WhatsAppNotificationData): string => {
+  if (data.trackingUrl && data.trackingCode) {
+    return `\n\n📍 *Seguí tu pedido:*\n🔗 ${data.trackingUrl}\n📦 *Código:* ${data.trackingCode}`;
+  }
   if (data.trackingUrl) {
-    return `\n\n📍 *Seguí tu pedido en tiempo real:*\n${data.trackingUrl}`;
+    return `\n\n📍 *Seguí tu pedido:*\n${data.trackingUrl}`;
   }
   return '';
 };
