@@ -35,7 +35,7 @@ export function StoreHeader({ storeName }: StoreHeaderProps) {
       <div className="container mx-auto flex h-14 items-center justify-between px-4 py-1 overflow-visible">
         <Link to="/store" className="group flex items-center gap-3 overflow-visible">
           <img src={storeLogo} alt="Musa Fitness" className="h-32 w-auto object-contain transition-transform duration-300 group-hover:scale-105 -my-9" />
-          <span className="text-xl font-bold tracking-tight transition-colors group-hover:text-primary">
+          <span className="hidden sm:inline text-xl font-bold tracking-tight transition-colors group-hover:text-primary">
             {storeName}
           </span>
         </Link>
