@@ -18,10 +18,17 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { toast } from "sonner";
 import { OrderDetails } from "./OrderDetails";
 import { PixBrasilPaymentDialog } from "@/components/payments/PixBrasilPaymentDialog";
 import { useWhatsAppNotification } from "@/hooks/useWhatsAppNotification";
+import { getStatusNotificationMessage } from "@/lib/whatsapp";
 
 const statusColors: Record<string, string> = {
   pending: "badge-warning",
@@ -363,15 +370,45 @@ export const OrdersTable = () => {
                             PIX
                           </Button>
                         )}
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => handleSendWhatsApp(order)}
-                          title="Enviar WhatsApp"
-                          disabled={!order.customers?.phone}
-                        >
-                          <MessageCircle className="w-4 h-4 text-[#25D366]" />
-                        </Button>
+                        <TooltipProvider delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                onClick={() => handleSendWhatsApp(order)}
+                                disabled={!order.customers?.phone}
+                              >
+                                <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent 
+                              side="left" 
+                              className="max-w-[350px] p-3 whitespace-pre-wrap text-xs"
+                            >
+                              {order.customers?.phone ? (
+                                <div className="space-y-1">
+                                  <p className="font-semibold text-foreground border-b pb-1 mb-2">
+                                    Vista previa del mensaje:
+                                  </p>
+                                  <p className="text-muted-foreground">
+                                    {getStatusNotificationMessage(order.status, {
+                                      orderId: order.id,
+                                      orderNumber: order.id.slice(0, 8),
+                                      customerName: order.customers?.name || "Cliente",
+                                      customerPhone: order.customers?.phone || "",
+                                      status: order.status,
+                                      total: order.total,
+                                      deliveryAddress: order.delivery_address,
+                                    })}
+                                  </p>
+                                </div>
+                              ) : (
+                                <span className="text-destructive">Sin teléfono registrado</span>
+                              )}
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                         <Button
                           variant="ghost"
                           size="icon"
