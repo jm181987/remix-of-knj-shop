@@ -8,6 +8,46 @@ interface LanguageContextType {
   t: (key: string) => string;
 }
 
+// Product translations by product name (Spanish -> Portuguese)
+export const productTranslations: Record<string, { name: string; description: string; category: string }> = {
+  // Legging Deportivo Premium
+  "Legging Deportivo Premium": {
+    name: "Legging Esportivo Premium",
+    description: "Legging de alta compressão com cintura alta e bolso lateral. Tecido respirável perfeito para treinos intensos.",
+    category: "Leggings"
+  },
+  // Top Deportivo Cruzado
+  "Top Deportivo Cruzado": {
+    name: "Top Esportivo Cruzado",
+    description: "Top com design cruzado nas costas, suporte médio e tecido macio ao toque. Ideal para yoga e pilates.",
+    category: "Tops"
+  },
+  // Conjunto Fitness 2 Piezas
+  "Conjunto Fitness 2 Piezas": {
+    name: "Conjunto Fitness 2 Peças",
+    description: "Set completo de legging e top combinando. Tecido com tecnologia dry-fit que mantém a pele seca.",
+    category: "Conjuntos"
+  },
+  // Shorts Deportivo Running
+  "Shorts Deportivo Running": {
+    name: "Shorts Esportivo Running",
+    description: "Shorts leves com malha interna e cintura elástica. Perfeitos para correr ou treinar na academia.",
+    category: "Shorts"
+  },
+  // Sudadera Oversize Gym
+  "Sudadera Oversize Gym": {
+    name: "Moletom Oversize Gym",
+    description: "Moletom confortável estilo oversize, ideal para antes e depois do treino. Capuz e bolso canguru.",
+    category: "Moletons"
+  },
+  // Calza Ciclista Media Pierna
+  "Calza Ciclista Media Pierna": {
+    name: "Bermuda Ciclista Meia Perna",
+    description: "Bermuda ciclista até o joelho com compressão suave. Perfeita para spinning e cardio.",
+    category: "Leggings"
+  },
+};
+
 const translations: Record<Language, Record<string, string>> = {
   es: {
     // Store
