@@ -17,6 +17,7 @@ import { UsersManager } from "@/components/settings/UsersManager";
 import { ApiKeysManager } from "@/components/settings/ApiKeysManager";
 import { UruguayShippingTiers } from "@/components/settings/UruguayShippingTiers";
 import { FooterSettingsManager } from "@/components/settings/FooterSettingsManager";
+import { HeroSettingsManager } from "@/components/settings/HeroSettingsManager";
 
 type StoreSettings = Tables<"store_settings">;
 
@@ -373,6 +374,8 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
+
+          <HeroSettingsManager />
 
           <FooterSettingsManager />
 

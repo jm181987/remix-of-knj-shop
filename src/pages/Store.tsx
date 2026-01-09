@@ -2,28 +2,26 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StoreHeader } from "@/components/store/StoreHeader";
 import { StoreFooter } from "@/components/store/StoreFooter";
+import { HeroBanner } from "@/components/store/HeroBanner";
 import { ProductCard } from "@/components/store/ProductCard";
 import { WhatsAppButton } from "@/components/store/WhatsAppButton";
 import { CartProvider } from "@/contexts/CartContext";
 import { LanguageProvider, useLanguage } from "@/contexts/LanguageContext";
-import { CurrencyProvider, useCurrencyContext } from "@/contexts/CurrencyContext";
-import { Loader2, Package, Search, MapPin, Sparkles } from "lucide-react";
-import { Input } from "@/components/ui/input";
+import { CurrencyProvider } from "@/contexts/CurrencyContext";
+import { Loader2, Package } from "lucide-react";
 import { useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { Badge } from "@/components/ui/badge";
 
 function StoreContent() {
   const [search, setSearch] = useState("");
   const { t } = useLanguage();
-  const { country, currencySymbol } = useCurrencyContext();
 
   const { data: storeSettings } = useQuery({
     queryKey: ["store-settings-public"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_settings")
-        .select("store_name, whatsapp_number")
+        .select("store_name, whatsapp_number, hero_image_url")
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -51,6 +49,7 @@ function StoreContent() {
 
   const storeName = storeSettings?.store_name || "Tienda";
   const whatsappNumber = (storeSettings as any)?.whatsapp_number;
+  const heroImageUrl = (storeSettings as any)?.hero_image_url;
 
   return (
     <>
@@ -66,59 +65,13 @@ function StoreContent() {
         <StoreHeader storeName={storeName} />
 
         <main>
-          {/* Hero Section */}
-          <section className="hero-section relative overflow-hidden py-20 md:py-28">
-            {/* Animated background elements */}
-            <div className="absolute -left-20 top-20 h-72 w-72 rounded-full bg-primary/10 blur-3xl" />
-            <div className="absolute -right-20 bottom-20 h-96 w-96 rounded-full bg-accent-foreground/10 blur-3xl" />
-            
-            <div className="container relative mx-auto px-4 text-center">
-              {/* Location indicator */}
-              <div className="mb-6 flex flex-col items-center gap-2 animate-fade-in">
-                <Badge variant="outline" className="gap-2 border-primary/30 bg-primary/10 px-4 py-2 text-sm backdrop-blur-sm">
-                  <MapPin className="h-4 w-4 text-primary" />
-                  {country === "BR" ? "Brasil" : "Uruguay"} • Precios en {currencySymbol}
-                </Badge>
-                {country === "UY" && (
-                  <span className="text-xs text-muted-foreground/70">
-                    * Precios en $U son referenciales. El pago se realiza en R$
-                  </span>
-                )}
-              </div>
-
-              <div className="mb-4 flex items-center justify-center gap-2">
-                <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-                <span className="text-sm font-medium uppercase tracking-widest text-primary">
-                  {t("store.welcome")}
-                </span>
-                <Sparkles className="h-5 w-5 text-primary animate-pulse" />
-              </div>
-
-              <h1 className="mb-6 text-5xl font-bold tracking-tight md:text-7xl">
-                <span className="text-gradient glow-text">{storeName}</span>
-              </h1>
-              
-              <p className="mx-auto max-w-2xl text-lg text-foreground md:text-xl">
-                {t("store.subtitle")}
-              </p>
-
-              {/* Search */}
-              <div className="mx-auto mt-10 max-w-lg">
-                <div className="relative group">
-                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-primary/50 to-accent-foreground/50 opacity-0 blur-lg transition-opacity duration-500 group-hover:opacity-100" />
-                  <div className="relative flex items-center">
-                    <Search className="absolute left-4 h-5 w-5 text-muted-foreground" />
-                    <Input
-                      placeholder={t("store.search")}
-                      value={search}
-                      onChange={(e) => setSearch(e.target.value)}
-                      className="h-14 rounded-2xl border-border/30 bg-card/50 pl-12 text-base backdrop-blur-xl transition-all focus:border-primary/50 focus:bg-card/80"
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          {/* Hero Banner */}
+          <HeroBanner
+            storeName={storeName}
+            heroImageUrl={heroImageUrl}
+            search={search}
+            onSearchChange={setSearch}
+          />
 
           {/* Products Section */}
           <section className="container mx-auto px-4 py-16">
