@@ -11,12 +11,12 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
-import { Users, Plus, Trash2, Loader2, Shield, Truck, Pencil } from "lucide-react";
+import { Users, Plus, Trash2, Loader2, Shield, Truck, Pencil, Crown } from "lucide-react";
 
 interface UserWithRole {
   id: string;
   email: string;
-  role: "admin" | "driver";
+  role: "admin" | "driver" | "superadmin";
   created_at: string;
 }
 
@@ -26,7 +26,7 @@ export const UsersManager = () => {
   const [editingUser, setEditingUser] = useState<UserWithRole | null>(null);
   const [newUserEmail, setNewUserEmail] = useState("");
   const [newUserPassword, setNewUserPassword] = useState("");
-  const [newUserRole, setNewUserRole] = useState<"admin" | "driver">("driver");
+  const [newUserRole, setNewUserRole] = useState<"admin" | "driver" | "superadmin">("driver");
   const [editEmail, setEditEmail] = useState("");
   const [editPassword, setEditPassword] = useState("");
   const queryClient = useQueryClient();
@@ -68,7 +68,7 @@ export const UsersManager = () => {
       const usersWithEmails: UserWithRole[] = roles.map(role => ({
         id: role.user_id,
         email: emails[role.user_id] || driverEmails[role.user_id] || "Email no disponible",
-        role: role.role as "admin" | "driver",
+        role: role.role as "admin" | "driver" | "superadmin",
         created_at: role.created_at,
       }));
 
@@ -164,7 +164,7 @@ export const UsersManager = () => {
   });
 
   const updateRoleMutation = useMutation({
-    mutationFn: async ({ userId, role }: { userId: string; role: "admin" | "driver" }) => {
+    mutationFn: async ({ userId, role }: { userId: string; role: "admin" | "driver" | "superadmin" }) => {
       const response = await supabase.functions.invoke("manage-user", {
         body: {
           action: "update",
@@ -219,6 +219,14 @@ export const UsersManager = () => {
   };
 
   const getRoleBadge = (role: string) => {
+    if (role === "superadmin") {
+      return (
+        <Badge className="gap-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white border-0">
+          <Crown className="w-3 h-3" />
+          Superadmin
+        </Badge>
+      );
+    }
     if (role === "admin") {
       return (
         <Badge variant="default" className="gap-1">
@@ -234,6 +242,8 @@ export const UsersManager = () => {
       </Badge>
     );
   };
+
+  const isSuperadmin = (user: UserWithRole) => user.role === "superadmin";
 
   return (
     <Card className="border-border/50">
@@ -344,65 +354,73 @@ export const UsersManager = () => {
                 <TableRow key={user.id}>
                   <TableCell className="font-medium">{user.email}</TableCell>
                   <TableCell>
-                    <Select
-                      value={user.role}
-                      onValueChange={(v) => updateRoleMutation.mutate({ userId: user.id, role: v as "admin" | "driver" })}
-                      disabled={updateRoleMutation.isPending}
-                    >
-                      <SelectTrigger className="w-[140px]">
-                        <SelectValue>{getRoleBadge(user.role)}</SelectValue>
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="admin">
-                          <div className="flex items-center gap-2">
-                            <Shield className="w-4 h-4" />
-                            Admin
-                          </div>
-                        </SelectItem>
-                        <SelectItem value="driver">
-                          <div className="flex items-center gap-2">
-                            <Truck className="w-4 h-4" />
-                            Entregador
-                          </div>
-                        </SelectItem>
-                      </SelectContent>
-                    </Select>
+                    {isSuperadmin(user) ? (
+                      getRoleBadge(user.role)
+                    ) : (
+                      <Select
+                        value={user.role}
+                        onValueChange={(v) => updateRoleMutation.mutate({ userId: user.id, role: v as "admin" | "driver" | "superadmin" })}
+                        disabled={updateRoleMutation.isPending}
+                      >
+                        <SelectTrigger className="w-[140px]">
+                          <SelectValue>{getRoleBadge(user.role)}</SelectValue>
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="admin">
+                            <div className="flex items-center gap-2">
+                              <Shield className="w-4 h-4" />
+                              Admin
+                            </div>
+                          </SelectItem>
+                          <SelectItem value="driver">
+                            <div className="flex items-center gap-2">
+                              <Truck className="w-4 h-4" />
+                              Entregador
+                            </div>
+                          </SelectItem>
+                        </SelectContent>
+                      </Select>
+                    )}
                   </TableCell>
                   <TableCell className="text-muted-foreground">
                     {new Date(user.created_at).toLocaleDateString()}
                   </TableCell>
                   <TableCell className="flex gap-1">
-                    <Button 
-                      variant="ghost" 
-                      size="icon" 
-                      onClick={() => openEditDialog(user)}
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </Button>
-                    <AlertDialog>
-                      <AlertDialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
-                          <Trash2 className="w-4 h-4" />
+                    {!isSuperadmin(user) && (
+                      <>
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          onClick={() => openEditDialog(user)}
+                        >
+                          <Pencil className="w-4 h-4" />
                         </Button>
-                      </AlertDialogTrigger>
-                      <AlertDialogContent>
-                        <AlertDialogHeader>
-                          <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
-                          <AlertDialogDescription>
-                            Esta acción eliminará permanentemente al usuario {user.email} y no se puede deshacer.
-                          </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-                          <AlertDialogAction
-                            onClick={() => deleteUserMutation.mutate(user.id)}
-                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                          >
-                            Eliminar
-                          </AlertDialogAction>
-                        </AlertDialogFooter>
-                      </AlertDialogContent>
-                    </AlertDialog>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">
+                              <Trash2 className="w-4 h-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>¿Eliminar usuario?</AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta acción eliminará permanentemente al usuario {user.email} y no se puede deshacer.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => deleteUserMutation.mutate(user.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Eliminar
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
