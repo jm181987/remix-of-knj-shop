@@ -27,7 +27,7 @@ const statusLabels: Record<string, string> = {
 };
 
 export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
-  const [trackingUrl, setTrackingUrl] = useState("");
+  const [trackingNumber, setTrackingNumber] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const queryClient = useQueryClient();
   const { sendNotification } = useWhatsAppNotification();
@@ -45,27 +45,42 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
     },
   });
 
-  // Initialize tracking URL when order loads
+  const TRACKING_BASE_URL = "https://www.ues.com.uy/rastreo_paquete.html";
+
+  // Extract tracking number from URL or use directly when order loads
   useEffect(() => {
     if (order?.tracking_url) {
-      setTrackingUrl(order.tracking_url);
+      // If it's the full UES URL, extract just the tracking number
+      // Otherwise use whatever is stored (for backwards compatibility)
+      const storedValue = order.tracking_url;
+      if (storedValue.includes("ues.com.uy")) {
+        // Try to extract number from URL params or just show the stored value
+        setTrackingNumber(storedValue);
+      } else {
+        setTrackingNumber(storedValue);
+      }
     } else {
-      setTrackingUrl("");
+      setTrackingNumber("");
     }
   }, [order?.tracking_url]);
 
+  const getFullTrackingUrl = () => {
+    return `${TRACKING_BASE_URL}?guia=${trackingNumber.trim()}`;
+  };
+
   const handleSaveTracking = async (andNotify: boolean = false) => {
-    if (!trackingUrl.trim()) {
-      toast.error("Ingresa una URL de tracking");
+    if (!trackingNumber.trim()) {
+      toast.error("Ingresa el número de guía");
       return;
     }
 
     setIsSaving(true);
     try {
       const previousStatus = order?.status;
+      const fullTrackingUrl = getFullTrackingUrl();
       
       // Update tracking URL and optionally change status to shipped
-      const updateData: any = { tracking_url: trackingUrl.trim() };
+      const updateData: any = { tracking_url: fullTrackingUrl };
       
       // If order is paid or preparing, auto-change to shipped when adding tracking
       if (order?.status === "paid" || order?.status === "preparing") {
@@ -102,7 +117,7 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
           status: updateData.status || order.status,
           total: order.total,
           deliveryAddress: order.delivery_address,
-          trackingUrl: trackingUrl.trim(),
+          trackingUrl: fullTrackingUrl,
         }, previousStatus);
       }
     } catch (error: any) {
@@ -147,17 +162,17 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
               </div>
             </div>
 
-            {/* Tracking URL Section */}
+            {/* Tracking Number Section */}
             <div className="p-4 bg-muted/30 rounded-lg space-y-3">
               <Label className="flex items-center gap-2 font-semibold">
                 <Link2 className="w-4 h-4" />
-                Link de Tracking
+                Número de Guía (UES)
               </Label>
               <div className="flex gap-2">
                 <Input
-                  value={trackingUrl}
-                  onChange={(e) => setTrackingUrl(e.target.value)}
-                  placeholder="https://tracking.example.com/..."
+                  value={trackingNumber}
+                  onChange={(e) => setTrackingNumber(e.target.value)}
+                  placeholder="Ingresa el número de guía..."
                   className="flex-1"
                 />
                 {order.tracking_url && (
@@ -165,18 +180,23 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                     variant="outline"
                     size="icon"
                     onClick={() => window.open(order.tracking_url, "_blank")}
-                    title="Abrir link"
+                    title="Abrir rastreo"
                   >
                     <ExternalLink className="w-4 h-4" />
                   </Button>
                 )}
               </div>
+              {trackingNumber.trim() && (
+                <p className="text-xs text-muted-foreground">
+                  Link: {getFullTrackingUrl()}
+                </p>
+              )}
               <div className="flex gap-2">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => handleSaveTracking(false)}
-                  disabled={isSaving || !trackingUrl.trim()}
+                  disabled={isSaving || !trackingNumber.trim()}
                 >
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Check className="w-4 h-4 mr-1" />}
                   Guardar
@@ -184,14 +204,14 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                 <Button
                   size="sm"
                   onClick={() => handleSaveTracking(true)}
-                  disabled={isSaving || !trackingUrl.trim() || !order.customers?.phone}
+                  disabled={isSaving || !trackingNumber.trim() || !order.customers?.phone}
                   className="gap-1"
                 >
                   {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
                   Guardar y Notificar
                 </Button>
               </div>
-              {order.tracking_url && order.tracking_url !== trackingUrl && (
+              {order.tracking_url && !order.tracking_url.includes(trackingNumber.trim()) && trackingNumber.trim() && (
                 <p className="text-xs text-amber-500">Hay cambios sin guardar</p>
               )}
             </div>
