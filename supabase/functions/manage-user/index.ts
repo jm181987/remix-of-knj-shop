@@ -11,7 +11,7 @@ interface ManageUserRequest {
   userIds?: string[];
   email?: string;
   password?: string;
-  role?: "admin" | "driver";
+  role?: "admin" | "driver" | "superadmin";
 }
 
 Deno.serve(async (req) => {
@@ -49,15 +49,17 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Check if requesting user is admin
-    const { data: adminRole } = await supabaseAdmin
+    // Check if requesting user is admin or superadmin
+    const { data: userRoles } = await supabaseAdmin
       .from("user_roles")
       .select("role")
       .eq("user_id", requestingUser.id)
-      .eq("role", "admin")
-      .maybeSingle();
+      .in("role", ["admin", "superadmin"]);
 
-    if (!adminRole) {
+    const isAdmin = userRoles && userRoles.length > 0;
+    const isSuperadmin = userRoles?.some(r => r.role === "superadmin");
+
+    if (!isAdmin) {
       return new Response(
         JSON.stringify({ error: "Solo los administradores pueden gestionar usuarios" }),
         { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
@@ -293,6 +295,21 @@ Deno.serve(async (req) => {
         return new Response(
           JSON.stringify({ error: "No puedes eliminar tu propia cuenta" }),
           { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        );
+      }
+
+      // Prevent non-superadmins from deleting superadmins
+      const { data: targetUserRoles } = await supabaseAdmin
+        .from("user_roles")
+        .select("role")
+        .eq("user_id", userId);
+      
+      const targetIsSuperadmin = targetUserRoles?.some(r => r.role === "superadmin");
+      
+      if (targetIsSuperadmin && !isSuperadmin) {
+        return new Response(
+          JSON.stringify({ error: "Solo los superadmins pueden eliminar otros superadmins" }),
+          { status: 403, headers: { ...corsHeaders, "Content-Type": "application/json" } }
         );
       }
 
