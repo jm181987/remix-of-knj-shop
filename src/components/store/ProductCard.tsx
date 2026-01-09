@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, Package, ShoppingBag, Palette, Ruler, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCartContext } from "@/contexts/CartContext";
-import { useLanguage } from "@/contexts/LanguageContext";
+import { useLanguage, productTranslations } from "@/contexts/LanguageContext";
 import { useCurrencyContext } from "@/contexts/CurrencyContext";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -43,8 +43,15 @@ export function ProductCard({
   stock,
 }: ProductCardProps) {
   const { addItem } = useCartContext();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { formatAmount } = useCurrencyContext();
+  
+  // Get translated product info based on language
+  const translatedProduct = language === "pt" && productTranslations[name]
+    ? productTranslations[name]
+    : null;
+  const displayName = translatedProduct?.name || name;
+  const displayDescription = translatedProduct?.description || description;
   const [variants, setVariants] = useState<ProductVariant[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
   const [loadingVariants, setLoadingVariants] = useState(true);
@@ -92,7 +99,7 @@ export function ProductCard({
 
     addItem({
       id,
-      name,
+      name: displayName,
       price: currentPrice,
       image_url,
       variant_id: selectedVariant?.id || null,
@@ -103,7 +110,7 @@ export function ProductCard({
     const variantInfo = selectedVariant 
       ? ` (${[selectedVariant.size, selectedVariant.color].filter(Boolean).join(" / ")})`
       : "";
-    toast.success(`${name}${variantInfo} ${t("product.added")}`);
+    toast.success(`${displayName}${variantInfo} ${t("product.added")}`);
   };
 
   const getVariantLabel = (variant: ProductVariant) => {
@@ -232,11 +239,11 @@ export function ProductCard({
       {/* Content Section */}
       <div className="p-5">
         <h3 className="line-clamp-1 text-lg font-semibold text-foreground transition-colors group-hover:text-primary">
-          {name}
+          {displayName}
         </h3>
-        {description && (
+        {displayDescription && (
           <p className="mt-2 line-clamp-2 text-sm text-muted-foreground/80">
-            {description}
+            {displayDescription}
           </p>
         )}
 
