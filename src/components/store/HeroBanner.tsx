@@ -39,7 +39,7 @@ export const HeroBanner = ({ storeName, heroImageUrl, search, onSearchChange }: 
           </Badge>
           {country === "UY" && (
             <span className="text-xs text-white/70">
-              {t("hero.pricesReference")}
+              El pago se realiza en $
             </span>
           )}
         </div>
