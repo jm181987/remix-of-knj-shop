@@ -40,16 +40,6 @@ const statusLabels: Record<string, string> = {
   cancelled: "Cancelado",
 };
 
-// WhatsApp message templates for each status
-const whatsappMessages: Record<string, string> = {
-  pending: "Hola! 👋 Tu pedido ha sido recibido y está pendiente de confirmación.",
-  paid: "¡Gracias por tu pago! ✅ Tu pedido ha sido confirmado y pronto comenzaremos a prepararlo.",
-  preparing: "¡Tu pedido está siendo preparado! 📦 Te avisaremos cuando esté listo para envío.",
-  shipped: "¡Tu pedido está en camino! 🚚 Pronto llegará a tu dirección.",
-  delivered: "¡Tu pedido ha sido entregado! 🎉 Gracias por tu compra.",
-  cancelled: "Tu pedido ha sido cancelado. Si tienes dudas, contáctanos.",
-};
-
 export const OrdersTable = () => {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
@@ -118,22 +108,8 @@ export const OrdersTable = () => {
     },
   });
 
-  // Send WhatsApp notification for status change
-  const sendWhatsAppNotification = (phone: string | null, customerName: string, orderId: string, status: string) => {
-    if (!phone) return;
-    
-    const cleanPhone = phone.replace(/\D/g, "");
-    const message = `${whatsappMessages[status] || "Tu pedido ha sido actualizado."}\n\n📦 Pedido: #${orderId.slice(0, 8)}\n👤 Cliente: ${customerName}`;
-    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodeURIComponent(message)}`;
-    
-    window.open(whatsappUrl, "_blank");
-  };
-
   const updateStatus = async (orderId: string, newStatus: string) => {
     try {
-      // Get order details for WhatsApp notification
-      const order = orders?.find(o => o.id === orderId);
-      
       const { error } = await supabase
         .from("orders")
         .update({ status: newStatus })
@@ -158,18 +134,7 @@ export const OrdersTable = () => {
           .eq("order_id", orderId);
       }
 
-      toast.success("Estado actualizado", {
-        action: order?.customers?.phone ? {
-          label: "Notificar WhatsApp",
-          onClick: () => sendWhatsAppNotification(
-            order.customers?.phone || null,
-            order.customers?.name || "Cliente",
-            orderId,
-            newStatus
-          ),
-        } : undefined,
-      });
-      
+      toast.success("Estado actualizado");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });
     } catch (error: any) {
