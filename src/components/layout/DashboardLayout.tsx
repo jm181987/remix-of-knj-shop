@@ -123,7 +123,8 @@ export const DashboardLayout = ({ children }: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen bg-background">
       <Sidebar />
-      <main className="ml-64 p-8 animate-slide-up">
+      {/* Mobile: add top padding for header, Desktop: add left margin for sidebar */}
+      <main className="pt-16 lg:pt-0 lg:ml-64 p-4 md:p-6 lg:p-8 animate-slide-up">
         {children}
       </main>
     </div>

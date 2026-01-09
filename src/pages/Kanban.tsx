@@ -126,13 +126,13 @@ const Kanban = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Kanban</h1>
-          <p className="text-muted-foreground mt-1">Gestión visual de pedidos</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Kanban</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">Gestión visual de pedidos</p>
         </div>
 
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0">
           {orderColumns.map((column) => {
             const Icon = column.icon;
             const columnOrders = getOrdersByStatus(column.id);
@@ -140,7 +140,7 @@ const Kanban = () => {
             return (
               <div
                 key={column.id}
-                className="flex-shrink-0 w-72"
+                className="flex-shrink-0 w-64 md:w-72"
                 onDrop={(e) => handleDrop(e, column.id)}
                 onDragOver={handleDragOver}
               >
