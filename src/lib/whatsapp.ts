@@ -8,21 +8,106 @@ export interface WhatsAppNotificationData {
   status: string;
   total?: number;
   deliveryAddress?: string;
+  trackingUrl?: string;
+  estimatedDelivery?: string;
+  driverName?: string;
+  driverPhone?: string;
+  storeName?: string;
 }
+
+const getTrackingInfo = (data: WhatsAppNotificationData): string => {
+  if (data.trackingUrl) {
+    return `\n\n📍 *Seguí tu pedido en tiempo real:*\n${data.trackingUrl}`;
+  }
+  return '';
+};
+
+const getDriverInfo = (data: WhatsAppNotificationData): string => {
+  if (data.driverName) {
+    let info = `\n\n👤 *Repartidor:* ${data.driverName}`;
+    if (data.driverPhone) {
+      info += `\n📞 ${data.driverPhone}`;
+    }
+    return info;
+  }
+  return '';
+};
 
 const statusMessages: Record<string, (data: WhatsAppNotificationData) => string> = {
   pending: (data) => 
-    `🛒 ¡Hola ${data.customerName}! Tu pedido #${data.orderNumber} ha sido recibido. Te avisaremos cuando esté en preparación.`,
+    `🛒 *¡Hola ${data.customerName}!*
+
+Tu pedido *#${data.orderNumber}* ha sido recibido correctamente.
+${data.total ? `\n💰 *Total:* $${data.total.toFixed(2)}` : ''}
+${data.deliveryAddress ? `\n📍 *Dirección:* ${data.deliveryAddress}` : ''}
+
+Te notificaremos cuando comencemos a prepararlo.
+
+¡Gracias por confiar en ${data.storeName || 'nosotros'}! 🙏`,
+
   paid: (data) => 
-    `✅ ¡Pago confirmado! Tu pedido #${data.orderNumber} está siendo procesado. ¡Gracias por tu compra!`,
+    `✅ *¡Pago confirmado!*
+
+Tu pedido *#${data.orderNumber}* está siendo procesado.
+${data.total ? `\n💰 *Total pagado:* $${data.total.toFixed(2)}` : ''}
+
+Pronto comenzaremos a prepararlo. Te mantendremos informado.
+
+¡Gracias por tu compra! 🎉`,
+
   preparing: (data) => 
-    `👨‍🍳 Tu pedido #${data.orderNumber} está siendo preparado. Te avisaremos cuando esté en camino.`,
+    `👨‍🍳 *¡Tu pedido está en preparación!*
+
+Pedido *#${data.orderNumber}*
+${data.deliveryAddress ? `\n📍 *Será enviado a:* ${data.deliveryAddress}` : ''}
+
+Estamos preparando tu pedido con mucho cuidado. Te avisaremos cuando esté en camino.${getTrackingInfo(data)}`,
+
   shipped: (data) => 
-    `🚚 ¡Tu pedido #${data.orderNumber} está en camino! ${data.deliveryAddress ? `Dirección: ${data.deliveryAddress}` : ''}`,
+    `🚚 *¡Tu pedido está en camino!*
+
+Pedido *#${data.orderNumber}*
+${data.deliveryAddress ? `\n📍 *Dirección de entrega:*\n${data.deliveryAddress}` : ''}
+${data.estimatedDelivery ? `\n⏰ *Tiempo estimado:* ${data.estimatedDelivery}` : ''}${getDriverInfo(data)}${getTrackingInfo(data)}
+
+¡Prepárate para recibirlo! 📦`,
+
   delivered: (data) => 
-    `✅ Tu pedido #${data.orderNumber} ha sido entregado. ¡Gracias por tu preferencia! ⭐`,
+    `✅ *¡Pedido entregado!*
+
+Tu pedido *#${data.orderNumber}* ha sido entregado exitosamente.
+
+¡Gracias por tu preferencia! Esperamos verte pronto de nuevo. ⭐
+
+Si tienes algún comentario o sugerencia, no dudes en escribirnos.`,
+
   cancelled: (data) => 
-    `❌ Tu pedido #${data.orderNumber} ha sido cancelado. Contáctanos si tienes dudas.`,
+    `❌ *Pedido cancelado*
+
+Tu pedido *#${data.orderNumber}* ha sido cancelado.
+${data.total ? `\n💰 *Monto:* $${data.total.toFixed(2)}` : ''}
+
+Si tienes dudas o deseas realizar un nuevo pedido, estamos para ayudarte.
+
+Lamentamos los inconvenientes. 🙏`,
+
+  refunded: (data) =>
+    `💸 *Reembolso procesado*
+
+El reembolso de tu pedido *#${data.orderNumber}* ha sido procesado.
+${data.total ? `\n💰 *Monto reembolsado:* $${data.total.toFixed(2)}` : ''}
+
+El dinero estará disponible en tu cuenta en 3-5 días hábiles.
+
+¡Gracias por tu paciencia! 🙏`,
+
+  ready_for_pickup: (data) =>
+    `🏪 *¡Tu pedido está listo!*
+
+Pedido *#${data.orderNumber}* está listo para retirar.
+${data.deliveryAddress ? `\n📍 *Retirá en:* ${data.deliveryAddress}` : ''}
+
+Te esperamos. ¡No olvides tu comprobante! 📋`,
 };
 
 export function generateWhatsAppLink(phone: string, message: string): string {
