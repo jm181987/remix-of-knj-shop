@@ -66,9 +66,13 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
               </div>
               <div className="mt-3 flex items-center gap-2">
                 <img 
-                  src="https://http2.mlstatic.com/storage/logos-api-admin/0daa1676-5f81-4f47-8c15-e3151b9cca6f-m.svg" 
+                  src="https://imgmp.mlstatic.com/org-img/MLB/MP/LOGO/MP-logo-FULL-color.svg" 
                   alt="MercadoPago" 
                   className="h-6"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.style.display = 'none';
+                  }}
                 />
               </div>
             </div>
