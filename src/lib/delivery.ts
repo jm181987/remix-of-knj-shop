@@ -96,7 +96,8 @@ export function getShippingOptions(
   sedexFee: number,
   turilFee: number,
   pickupEnabled: boolean = false,
-  totalWeight: number = 0
+  totalWeight: number = 0,
+  country: 'BR' | 'UY' = 'UY'
 ): ShippingOption[] {
   const localFee = calculateDeliveryFee(distanceKm, baseFee, perKmFee, maxKm);
   const isLocal = isWithinLocalDelivery(distanceKm, maxKm);
@@ -107,41 +108,51 @@ export function getShippingOptions(
   if (pickupEnabled) {
     options.push({
       id: 'pickup',
-      name: 'Retiro en Tienda',
-      description: 'Sin costo de envío - Retira tu pedido en la tienda',
+      name: country === 'BR' ? 'Retirada na Loja' : 'Retiro en Tienda',
+      description: country === 'BR' ? 'Sem custo de frete - Retire seu pedido na loja' : 'Sin costo de envío - Retira tu pedido en la tienda',
       fee: 0,
       available: true,
     });
   }
 
-  options.push(
-    {
-      id: 'local',
-      name: 'Entrega Local',
-      description: isLocal 
-        ? `Hasta ${maxKm}km - ${distanceKm.toFixed(1)}km de distancia`
-        : `Fuera del área de entrega (${distanceKm.toFixed(1)}km)`,
-      fee: localFee,
-      available: isLocal,
-      currency: 'BRL',
-    },
-    {
+  // Local delivery - available for both countries
+  options.push({
+    id: 'local',
+    name: country === 'BR' ? 'Entrega Local' : 'Entrega Local',
+    description: isLocal 
+      ? (country === 'BR' 
+          ? `Até ${maxKm}km - ${distanceKm.toFixed(1)}km de distância`
+          : `Hasta ${maxKm}km - ${distanceKm.toFixed(1)}km de distancia`)
+      : (country === 'BR'
+          ? `Fora da área de entrega (${distanceKm.toFixed(1)}km)`
+          : `Fuera del área de entrega (${distanceKm.toFixed(1)}km)`),
+    fee: localFee,
+    available: isLocal,
+    currency: country === 'BR' ? 'BRL' : 'UYU',
+  });
+
+  // Country-specific shipping options
+  if (country === 'BR') {
+    // Brazil: Only show Sedex
+    options.push({
       id: 'sedex_brazil',
       name: 'Sedex Brasil',
-      description: 'Envío a todo Brasil',
+      description: 'Envio para todo o Brasil',
       fee: sedexFee,
       available: true,
       currency: 'BRL',
-    },
-    {
+    });
+  } else {
+    // Uruguay: Only show Turil
+    options.push({
       id: 'turil_uruguay',
       name: 'Transportadora de Uruguay',
       description: `Envío a Uruguay (${totalWeight ? totalWeight.toFixed(1) + 'kg' : 'según peso'})`,
       fee: turilFee,
       available: true,
-      currency: 'UYU', // Already in pesos
-    }
-  );
+      currency: 'UYU',
+    });
+  }
 
   return options;
 }
