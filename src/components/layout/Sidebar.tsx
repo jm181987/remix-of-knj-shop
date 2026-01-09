@@ -40,7 +40,7 @@ export const Sidebar = () => {
             <TrendingUp className="w-5 h-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground">Ventas Pro By KNJ</h1>
+            <h1 className="text-lg font-bold text-sidebar-foreground">Musa Fitness</h1>
             <p className="text-xs text-sidebar-foreground/50">Panel de Control</p>
           </div>
         </div>

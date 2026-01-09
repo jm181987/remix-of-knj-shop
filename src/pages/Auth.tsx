@@ -68,7 +68,7 @@ const Auth = () => {
             <TrendingUp className="w-8 h-8 text-primary-foreground" />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Ventas Pro By KNJ</CardTitle>
+            <CardTitle className="text-2xl font-bold">Musa Fitness</CardTitle>
             <CardDescription className="text-muted-foreground">
               Inicia sesión en tu cuenta
             </CardDescription>
