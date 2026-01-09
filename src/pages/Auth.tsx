@@ -6,8 +6,9 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
-import { TrendingUp, Mail, Lock } from "lucide-react";
+import { Mail, Lock } from "lucide-react";
 import { Session } from "@supabase/supabase-js";
+import musaLogo from "@/assets/musa-logo.png";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -64,8 +65,8 @@ const Auth = () => {
       
       <Card className="w-full max-w-md relative z-10 border-border/50 bg-card/80 backdrop-blur-sm">
         <CardHeader className="text-center space-y-4">
-          <div className="mx-auto w-16 h-16 rounded-2xl bg-primary flex items-center justify-center">
-            <TrendingUp className="w-8 h-8 text-primary-foreground" />
+          <div className="mx-auto w-20 h-20 rounded-2xl bg-white/10 flex items-center justify-center overflow-hidden">
+            <img src={musaLogo} alt="Musa Fitness" className="w-16 h-16 object-contain" />
           </div>
           <div>
             <CardTitle className="text-2xl font-bold">Musa Fitness</CardTitle>
