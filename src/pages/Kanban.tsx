@@ -34,6 +34,39 @@ const Kanban = () => {
   const queryClient = useQueryClient();
   const { sendNotification } = useWhatsAppNotification();
 
+  // Fetch exchange rate for currency formatting
+  const { data: storeSettings } = useQuery({
+    queryKey: ["store-settings-kanban"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("store_settings")
+        .select("brl_to_uyu_rate")
+        .maybeSingle();
+      if (error) throw error;
+      return data;
+    },
+  });
+
+  const exchangeRate = Number(storeSettings?.brl_to_uyu_rate) || 8.5;
+
+  // Determine if order is from Uruguay
+  const isUruguayOrder = (order: { shipping_method?: string | null; payment_method?: string | null }) => {
+    if (order.shipping_method === "turil_uruguay") return true;
+    if (order.shipping_method === "sedex_brazil") return false;
+    if (order.payment_method === "mercadopago") return true;
+    if (order.payment_method === "pix") return false;
+    return true;
+  };
+
+  // Format price: DB has UYU, convert to BRL for Brazil orders
+  const formatOrderPrice = (amountUYU: number, order: { shipping_method?: string | null; payment_method?: string | null }) => {
+    if (isUruguayOrder(order)) {
+      return `$U ${amountUYU.toFixed(2)}`;
+    }
+    const amountBRL = amountUYU / exchangeRate;
+    return `R$ ${amountBRL.toFixed(2)}`;
+  };
+
   // Fetch orders
   const { data: orders = [], isLoading: ordersLoading } = useQuery({
     queryKey: ["kanban-orders"],
@@ -191,7 +224,7 @@ const Kanban = () => {
                           
                           <div className="flex items-center justify-between pt-1">
                             <span className="font-semibold text-sm">
-                              R$ {Number(order.total).toFixed(2)}
+                              {formatOrderPrice(Number(order.total), order)}
                             </span>
                             <div className="flex gap-1">
                               {order.customers?.phone && (

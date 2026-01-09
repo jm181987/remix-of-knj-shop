@@ -43,20 +43,20 @@ export function getCurrencyForCountry(country: "BR" | "UY"): Currency {
 // Format price with currency symbol
 export function formatPrice(
   amount: number,
-  currency: Currency = "BRL"
+  currency: Currency = "UYU"
 ): string {
   const config = currencies[currency];
   return `${config.symbol} ${amount.toFixed(2)}`;
 }
 
+// Convert UYU to BRL (prices in DB are in UYU)
+export function convertUYUtoBRL(amountUYU: number, exchangeRate: number): number {
+  return amountUYU / exchangeRate;
+}
+
 // Convert BRL to UYU
 export function convertBRLtoUYU(amountBRL: number, exchangeRate: number): number {
   return amountBRL * exchangeRate;
-}
-
-// Convert UYU to BRL
-export function convertUYUtoBRL(amountUYU: number, exchangeRate: number): number {
-  return amountUYU / exchangeRate;
 }
 
 // Hook for currency conversion based on location

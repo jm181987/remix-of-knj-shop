@@ -72,6 +72,7 @@ export const OrdersTable = () => {
   const exchangeRate = Number(storeSettings?.brl_to_uyu_rate) || 8.5;
 
   // Determine if order is from Uruguay based on shipping method or payment method
+  // Prices in DB are in UYU. UY orders show UYU, BR orders convert to BRL.
   const isUruguayOrder = (order: { shipping_method?: string | null; payment_method?: string | null }) => {
     // Check shipping method first (most reliable)
     if (order.shipping_method === "turil_uruguay") return true;
@@ -79,8 +80,8 @@ export const OrdersTable = () => {
     // For local/pickup, check payment method
     if (order.payment_method === "mercadopago") return true;
     if (order.payment_method === "pix") return false;
-    // Default to Brazil if we can't determine
-    return false;
+    // Default to Uruguay since prices are in UYU
+    return true;
   };
 
   // Get country flag
@@ -89,14 +90,14 @@ export const OrdersTable = () => {
   };
 
   // Format price based on order origin
-  const formatOrderPrice = (amount: number, order: { shipping_method?: string | null; payment_method?: string | null }) => {
+  // Prices in DB are in UYU. For Brazil orders, convert to BRL.
+  const formatOrderPrice = (amountUYU: number, order: { shipping_method?: string | null; payment_method?: string | null }) => {
     if (isUruguayOrder(order)) {
-      // Uruguay - convert to UYU
-      const amountUYU = amount * exchangeRate;
       return `$U ${amountUYU.toFixed(2)}`;
     }
-    // Brazil - keep BRL
-    return `R$ ${amount.toFixed(2)}`;
+    // Brazil - convert UYU to BRL
+    const amountBRL = amountUYU / exchangeRate;
+    return `R$ ${amountBRL.toFixed(2)}`;
   };
 
   const { data: orders, isLoading } = useQuery({
