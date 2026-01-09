@@ -18,6 +18,7 @@ import OrderTracking from "./pages/OrderTracking";
 import DriverAuth from "./pages/DriverAuth";
 import DriverPanel from "./pages/DriverPanel";
 import PaymentConfirmation from "./pages/PaymentConfirmation";
+import Kanban from "./pages/Kanban";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/driver-login" element={<DriverAuth />} />
             <Route path="/driver" element={<DriverPanel />} />
             <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
+            <Route path="/kanban" element={<Kanban />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>

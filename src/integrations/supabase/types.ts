@@ -585,6 +585,104 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_conversations: {
+        Row: {
+          created_at: string
+          customer_id: string | null
+          customer_name: string | null
+          customer_phone: string
+          id: string
+          last_message: string | null
+          last_message_at: string | null
+          notes: string | null
+          order_id: string | null
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          notes?: string | null
+          order_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          customer_id?: string | null
+          customer_name?: string | null
+          customer_phone?: string
+          id?: string
+          last_message?: string | null
+          last_message_at?: string | null
+          notes?: string | null
+          order_id?: string | null
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_conversations_customer_id_fkey"
+            columns: ["customer_id"]
+            isOneToOne: false
+            referencedRelation: "customers"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "whatsapp_conversations_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      whatsapp_notifications: {
+        Row: {
+          clicked_at: string | null
+          id: string
+          message: string
+          order_id: string
+          phone_number: string
+          sent_at: string
+          status_from: string | null
+          status_to: string
+        }
+        Insert: {
+          clicked_at?: string | null
+          id?: string
+          message: string
+          order_id: string
+          phone_number: string
+          sent_at?: string
+          status_from?: string | null
+          status_to: string
+        }
+        Update: {
+          clicked_at?: string | null
+          id?: string
+          message?: string
+          order_id?: string
+          phone_number?: string
+          sent_at?: string
+          status_from?: string | null
+          status_to?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_notifications_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

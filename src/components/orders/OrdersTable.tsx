@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Search, Eye, Truck, MapPin, QrCode, CreditCard, Trash2 } from "lucide-react";
+import { Search, Eye, Truck, MapPin, QrCode, CreditCard, Trash2, MessageCircle } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -21,6 +21,7 @@ import {
 import { toast } from "sonner";
 import { OrderDetails } from "./OrderDetails";
 import { PixBrasilPaymentDialog } from "@/components/payments/PixBrasilPaymentDialog";
+import { useWhatsAppNotification } from "@/hooks/useWhatsAppNotification";
 
 const statusColors: Record<string, string> = {
   pending: "badge-warning",
@@ -46,6 +47,7 @@ export const OrdersTable = () => {
   const [selectedOrder, setSelectedOrder] = useState<string | null>(null);
   const [pixPaymentOrder, setPixPaymentOrder] = useState<{ id: string; total: number } | null>(null);
   const queryClient = useQueryClient();
+  const { sendNotification } = useWhatsAppNotification();
 
   // Fetch exchange rate for UYU conversion
   const { data: storeSettings } = useQuery({
@@ -108,7 +110,9 @@ export const OrdersTable = () => {
     },
   });
 
-  const updateStatus = async (orderId: string, newStatus: string) => {
+  const updateStatus = async (orderId: string, newStatus: string, order?: any) => {
+    const previousStatus = order?.status;
+    
     try {
       const { error } = await supabase
         .from("orders")
@@ -137,9 +141,41 @@ export const OrdersTable = () => {
       toast.success("Estado actualizado");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["deliveries"] });
+
+      // Offer to send WhatsApp notification
+      if (order?.customers?.phone) {
+        const shouldNotify = window.confirm("¿Enviar notificación por WhatsApp?");
+        if (shouldNotify) {
+          await sendNotification({
+            orderId: order.id,
+            orderNumber: order.id.slice(0, 8),
+            customerName: order.customers.name || "Cliente",
+            customerPhone: order.customers.phone,
+            status: newStatus,
+            total: order.total,
+            deliveryAddress: order.delivery_address,
+          }, previousStatus);
+        }
+      }
     } catch (error: any) {
       toast.error(error.message);
     }
+  };
+
+  const handleSendWhatsApp = async (order: any) => {
+    if (!order.customers?.phone) {
+      toast.error("El cliente no tiene teléfono registrado");
+      return;
+    }
+    await sendNotification({
+      orderId: order.id,
+      orderNumber: order.id.slice(0, 8),
+      customerName: order.customers.name || "Cliente",
+      customerPhone: order.customers.phone,
+      status: order.status,
+      total: order.total,
+      deliveryAddress: order.delivery_address,
+    });
   };
 
   const deleteOrder = async (orderId: string) => {
@@ -297,7 +333,7 @@ export const OrdersTable = () => {
                     <td className="py-4 px-6 text-center">
                       <Select
                         value={order.status}
-                        onValueChange={(value) => updateStatus(order.id, value)}
+                        onValueChange={(value) => updateStatus(order.id, value, order)}
                       >
                         <SelectTrigger className={`w-[130px] h-8 text-xs ${statusColors[order.status]} border-0`}>
                           <SelectValue />
@@ -330,6 +366,15 @@ export const OrdersTable = () => {
                         <Button
                           variant="ghost"
                           size="icon"
+                          onClick={() => handleSendWhatsApp(order)}
+                          title="Enviar WhatsApp"
+                          disabled={!order.customers?.phone}
+                        >
+                          <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
                           onClick={() => setSelectedOrder(order.id)}
                         >
                           <Eye className="w-4 h-4" />
@@ -337,7 +382,7 @@ export const OrdersTable = () => {
                         <Button
                           variant="ghost"
                           size="icon"
-                          onClick={() => updateStatus(order.id, "shipped")}
+                          onClick={() => updateStatus(order.id, "shipped", order)}
                           disabled={order.status !== "preparing" && order.status !== "paid"}
                         >
                           <Truck className="w-4 h-4" />
