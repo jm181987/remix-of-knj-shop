@@ -232,9 +232,9 @@ export function ProductCard({
             </div>
           )}
 
-          {/* Quick add button - appears on hover */}
+          {/* Quick add button - appears on hover (desktop only) */}
           {!hasVariants && (
-            <div className="absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 z-30">
+            <div className="hidden sm:block absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 z-30">
               <Button
                 size="sm"
                 onClick={handleAddToCart}
@@ -295,10 +295,21 @@ export function ProductCard({
             </div>
           )}
 
-          <div className="mt-4 flex items-center justify-between">
+          <div className="mt-4 flex items-center justify-between gap-2">
             <span className="text-2xl font-bold text-primary glow-text">
               {formatAmount(currentPrice)}
             </span>
+            {/* Mobile add to cart button */}
+            {!hasVariants && (
+              <Button
+                size="sm"
+                onClick={handleAddToCart}
+                disabled={currentStock === 0}
+                className="sm:hidden gap-1.5 rounded-full px-4 bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <ShoppingBag className="h-4 w-4" />
+              </Button>
+            )}
           </div>
         </div>
       </div>
