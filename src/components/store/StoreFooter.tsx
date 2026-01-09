@@ -31,8 +31,17 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
   const description = (footerSettings as any)?.footer_description || defaultDescription;
 
   const location = (footerSettings as any)?.footer_location || "Rivera, Uruguay 🇺🇾";
-  const instagramUrl = (footerSettings as any)?.footer_instagram || "https://instagram.com";
-  const facebookUrl = (footerSettings as any)?.footer_facebook || "https://facebook.com";
+  // Ensure URLs have proper protocol
+  const ensureProtocol = (url: string) => {
+    if (!url) return url;
+    if (url.startsWith('http://') || url.startsWith('https://')) return url;
+    return `https://${url}`;
+  };
+
+  const rawInstagramUrl = (footerSettings as any)?.footer_instagram || "https://instagram.com";
+  const rawFacebookUrl = (footerSettings as any)?.footer_facebook || "https://facebook.com";
+  const instagramUrl = ensureProtocol(rawInstagramUrl);
+  const facebookUrl = ensureProtocol(rawFacebookUrl);
   const contactEmail = (footerSettings as any)?.footer_email || "contacto@musafitness.com";
   const developerName = (footerSettings as any)?.footer_developer_name || "Jorge Marquez";
   const developerLink = (footerSettings as any)?.footer_developer_link || "https://wa.me/59894920949";
