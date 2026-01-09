@@ -16,6 +16,7 @@ import { StoreLocationMap } from "@/components/settings/StoreLocationMap";
 import { UsersManager } from "@/components/settings/UsersManager";
 import { ApiKeysManager } from "@/components/settings/ApiKeysManager";
 import { UruguayShippingTiers } from "@/components/settings/UruguayShippingTiers";
+import { FooterSettingsManager } from "@/components/settings/FooterSettingsManager";
 
 type StoreSettings = Tables<"store_settings">;
 
@@ -372,6 +373,8 @@ const Settings = () => {
               </div>
             </CardContent>
           </Card>
+
+          <FooterSettingsManager />
 
           <UsersManager />
 

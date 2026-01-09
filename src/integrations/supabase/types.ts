@@ -481,6 +481,13 @@ export type Database = {
           delivery_base_fee: number | null
           delivery_max_km: number | null
           delivery_per_km: number | null
+          footer_description: string | null
+          footer_developer_link: string | null
+          footer_developer_name: string | null
+          footer_email: string | null
+          footer_facebook: string | null
+          footer_instagram: string | null
+          footer_location: string | null
           id: string
           mercadopago_access_token: string | null
           mercadopago_brasil_access_token: string | null
@@ -502,6 +509,13 @@ export type Database = {
           delivery_base_fee?: number | null
           delivery_max_km?: number | null
           delivery_per_km?: number | null
+          footer_description?: string | null
+          footer_developer_link?: string | null
+          footer_developer_name?: string | null
+          footer_email?: string | null
+          footer_facebook?: string | null
+          footer_instagram?: string | null
+          footer_location?: string | null
           id?: string
           mercadopago_access_token?: string | null
           mercadopago_brasil_access_token?: string | null
@@ -523,6 +537,13 @@ export type Database = {
           delivery_base_fee?: number | null
           delivery_max_km?: number | null
           delivery_per_km?: number | null
+          footer_description?: string | null
+          footer_developer_link?: string | null
+          footer_developer_name?: string | null
+          footer_email?: string | null
+          footer_facebook?: string | null
+          footer_instagram?: string | null
+          footer_location?: string | null
           id?: string
           mercadopago_access_token?: string | null
           mercadopago_brasil_access_token?: string | null
