@@ -24,8 +24,8 @@ const Dashboard = () => {
       const totalCustomers = customersRes.count || 0;
       const pendingDeliveries = deliveriesRes.data?.filter(d => d.status === "pending").length || 0;
       
-      // Get completed orders
-      const completedOrders = ordersRes.data?.filter(o => o.status === "completed") || [];
+      // Get delivered orders (completed sales)
+      const completedOrders = ordersRes.data?.filter(o => o.status === "delivered") || [];
       const completedOrderIds = completedOrders.map(o => o.id);
       
       const totalRevenue = completedOrders.reduce((sum, o) => sum + Number(o.total), 0);
