@@ -21,11 +21,13 @@ export const HeroBanner = ({ storeName, heroImageUrl, heroImagePosition, search,
   const bgPosition = heroImagePosition || "center";
 
   return (
-    <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundImage})`, backgroundPosition: bgPosition }}
+    <section className="relative min-h-[50vh] sm:min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
+      {/* Background Image - using img tag for better mobile responsiveness */}
+      <img 
+        src={backgroundImage}
+        alt="Hero banner"
+        className="absolute inset-0 w-full h-full object-cover"
+        style={{ objectPosition: bgPosition }}
       />
       
       {/* Overlay */}
