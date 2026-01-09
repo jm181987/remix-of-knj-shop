@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
 import { OrderDetails } from "./OrderDetails";
-import { PixPaymentDialog } from "@/components/payments/PixPaymentDialog";
+import { PixBrasilPaymentDialog } from "@/components/payments/PixBrasilPaymentDialog";
 
 const statusColors: Record<string, string> = {
   pending: "badge-warning",
@@ -395,7 +395,7 @@ export const OrdersTable = () => {
       )}
 
       {pixPaymentOrder && (
-        <PixPaymentDialog
+        <PixBrasilPaymentDialog
           open={!!pixPaymentOrder}
           onOpenChange={(open) => !open && setPixPaymentOrder(null)}
           orderId={pixPaymentOrder.id}
