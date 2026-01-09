@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { StoreHeader } from "@/components/store/StoreHeader";
+import { StoreFooter } from "@/components/store/StoreFooter";
 import { ProductCard } from "@/components/store/ProductCard";
 import { WhatsAppButton } from "@/components/store/WhatsAppButton";
 import { CartProvider } from "@/contexts/CartContext";
@@ -160,12 +161,7 @@ function StoreContent() {
           </section>
         </main>
 
-        {/* Footer */}
-        <footer className="border-t border-border/20 bg-card/30 py-10 text-center backdrop-blur-sm">
-          <p className="text-sm text-muted-foreground/60">
-            © {new Date().getFullYear()} {storeName}. {t("store.rights")}
-          </p>
-        </footer>
+        <StoreFooter storeName={storeName} whatsappNumber={whatsappNumber} />
 
         <WhatsAppButton phoneNumber={whatsappNumber} />
       </div>
