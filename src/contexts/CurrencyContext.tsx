@@ -5,7 +5,7 @@ import {
   Currency, 
   currencies, 
   formatPrice,
-  convertBRLtoUYU 
+  convertUYUtoBRL 
 } from "@/hooks/useCurrency";
 import { useLanguage } from "./LanguageContext";
 
@@ -14,8 +14,8 @@ interface CurrencyContextType {
   currencySymbol: string;
   country: "BR" | "UY";
   exchangeRate: number;
-  formatAmount: (amountInBRL: number) => string;
-  convertFromBRL: (amountInBRL: number) => number;
+  formatAmount: (amountInUYU: number) => string;
+  convertFromUYU: (amountInUYU: number) => number;
   isLoading: boolean;
   locationDetected: boolean;
 }
@@ -39,6 +39,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
     },
   });
 
+  // Exchange rate: how many UYU = 1 BRL
   const exchangeRate = (settings as any)?.brl_to_uyu_rate || 8.5;
 
   // Currency is determined by selected language:
@@ -48,12 +49,15 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
   const currency: Currency = language === "pt" ? "BRL" : "UYU";
   const currencyConfig = currencies[currency];
 
-  const convertFromBRL = (amountInBRL: number): number => {
-    return currency === "UYU" ? convertBRLtoUYU(amountInBRL, exchangeRate) : amountInBRL;
+  // Convert from UYU (base currency in DB) to target currency
+  const convertFromUYU = (amountInUYU: number): number => {
+    // If BRL, divide by exchange rate. If UYU, return as is.
+    return currency === "BRL" ? convertUYUtoBRL(amountInUYU, exchangeRate) : amountInUYU;
   };
 
-  const formatAmount = (amountInBRL: number): string => {
-    const converted = convertFromBRL(amountInBRL);
+  // Format amount from UYU to display currency
+  const formatAmount = (amountInUYU: number): string => {
+    const converted = convertFromUYU(amountInUYU);
     return formatPrice(converted, currency);
   };
 
@@ -65,7 +69,7 @@ export function CurrencyProvider({ children }: { children: ReactNode }) {
         country,
         exchangeRate,
         formatAmount,
-        convertFromBRL,
+        convertFromUYU,
         isLoading: isLoadingSettings,
         locationDetected: true,
       }}

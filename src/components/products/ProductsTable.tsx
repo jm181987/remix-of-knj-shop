@@ -183,7 +183,7 @@ export const ProductsTable = () => {
                         )}
                       </td>
                       <td className="py-4 px-6 text-right font-medium">
-                        ${Number(product.price).toFixed(2)}
+                        $U {Number(product.price).toFixed(2)}
                       </td>
                       <td className="py-4 px-6 text-right">
                         <span className={`font-medium ${

@@ -67,7 +67,7 @@ function CheckoutContent() {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCartContext();
   const { t, language } = useLanguage();
-  const { country, formatAmount, convertFromBRL } = useCurrencyContext();
+  const { country, formatAmount } = useCurrencyContext();
   const [createdOrder, setCreatedOrder] = useState<{
     id: string;
     total: number;
@@ -602,13 +602,13 @@ function CheckoutContent() {
         />
       )}
 
-      {/* MercadoPago for Uruguay (Spanish) - valor convertido a UYU */}
+      {/* MercadoPago for Uruguay (Spanish) - valor en UYU (moneda base) */}
       {createdOrder && language === "es" && (
         <MercadoPagoPaymentDialog
           open={!!createdOrder}
           onOpenChange={(open) => !open && setCreatedOrder(null)}
           orderId={createdOrder.id}
-          orderTotal={convertFromBRL(createdOrder.total)}
+          orderTotal={createdOrder.total}
           onPaymentConfirmed={handlePaymentConfirmed}
         />
       )}

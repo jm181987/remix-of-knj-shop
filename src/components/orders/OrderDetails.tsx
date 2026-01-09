@@ -242,11 +242,11 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                       <div>
                         <p className="font-medium">{item.product_name}</p>
                         <p className="text-sm text-muted-foreground">
-                          {item.quantity} x ${Number(item.unit_price).toFixed(2)}
+                          {item.quantity} x $U {Number(item.unit_price).toFixed(2)}
                         </p>
                       </div>
                     </div>
-                    <p className="font-semibold">${Number(item.subtotal).toFixed(2)}</p>
+                    <p className="font-semibold">$U {Number(item.subtotal).toFixed(2)}</p>
                   </div>
                 ))}
               </div>
@@ -256,19 +256,19 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
             <div className="border-t border-border pt-4 space-y-2">
               <div className="flex justify-between text-sm">
                 <span className="text-muted-foreground">Subtotal</span>
-                <span>${(Number(order.total) - Number(order.delivery_fee || 0)).toFixed(2)}</span>
+                <span>$U {(Number(order.total) - Number(order.delivery_fee || 0)).toFixed(2)}</span>
               </div>
               {order.delivery_fee && Number(order.delivery_fee) > 0 && (
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">
                     Envío ({order.delivery_distance ? `${Number(order.delivery_distance).toFixed(1)} km` : ""})
                   </span>
-                  <span>${Number(order.delivery_fee).toFixed(2)}</span>
+                  <span>$U {Number(order.delivery_fee).toFixed(2)}</span>
                 </div>
               )}
               <div className="flex justify-between text-lg font-bold">
                 <span>Total</span>
-                <span className="text-primary">${Number(order.total).toFixed(2)}</span>
+                <span className="text-primary">$U {Number(order.total).toFixed(2)}</span>
               </div>
             </div>
 

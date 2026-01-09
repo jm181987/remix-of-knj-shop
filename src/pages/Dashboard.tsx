@@ -79,14 +79,14 @@ const Dashboard = () => {
         <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatCard
             title="Ingresos Totales"
-            value={`$${stats?.totalRevenue?.toLocaleString() || 0}`}
+            value={`$U ${stats?.totalRevenue?.toLocaleString() || 0}`}
             icon={DollarSign}
             trend={{ value: 12.5, isPositive: true }}
             className="bg-gradient-to-br from-emerald-500/10 to-emerald-600/5 border-emerald-500/20"
           />
           <StatCard
             title="Ganancia Líquida"
-            value={`$${stats?.netProfit?.toLocaleString() || 0}`}
+            value={`$U ${stats?.netProfit?.toLocaleString() || 0}`}
             icon={TrendingUp}
             trend={{ value: stats?.netProfit && stats?.totalRevenue ? Math.round((stats.netProfit / stats.totalRevenue) * 100) : 0, isPositive: (stats?.netProfit || 0) >= 0 }}
             className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-500/20"
