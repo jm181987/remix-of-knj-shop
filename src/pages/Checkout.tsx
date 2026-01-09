@@ -308,9 +308,16 @@ function CheckoutContent() {
 
   const onSubmit = (data: CheckoutForm) => {
     if (items.length === 0) {
-      toast.error("Tu carrito está vacío");
+      toast.error(language === "pt" ? "Seu carrinho está vazio" : "Tu carrito está vacío");
       return;
     }
+    
+    // Validate location for local delivery
+    if (selectedShipping === 'local' && (!deliveryInfo.calculated || (deliveryInfo.lat === 0 && deliveryInfo.lon === 0))) {
+      toast.error(language === "pt" ? "Por favor, selecione a localização de entrega no mapa" : "Por favor, selecciona la ubicación de entrega en el mapa");
+      return;
+    }
+    
     createOrderMutation.mutate(data);
   };
 
