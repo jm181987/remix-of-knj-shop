@@ -491,6 +491,7 @@ export type Database = {
           footer_facebook: string | null
           footer_instagram: string | null
           footer_location: string | null
+          hero_image_position: string | null
           hero_image_url: string | null
           id: string
           mercadopago_access_token: string | null
@@ -520,6 +521,7 @@ export type Database = {
           footer_facebook?: string | null
           footer_instagram?: string | null
           footer_location?: string | null
+          hero_image_position?: string | null
           hero_image_url?: string | null
           id?: string
           mercadopago_access_token?: string | null
@@ -549,6 +551,7 @@ export type Database = {
           footer_facebook?: string | null
           footer_instagram?: string | null
           footer_location?: string | null
+          hero_image_position?: string | null
           hero_image_url?: string | null
           id?: string
           mercadopago_access_token?: string | null

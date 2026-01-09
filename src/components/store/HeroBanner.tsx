@@ -7,23 +7,25 @@ import { useCurrencyContext } from "@/contexts/CurrencyContext";
 interface HeroBannerProps {
   storeName: string;
   heroImageUrl?: string | null;
+  heroImagePosition?: string | null;
   search: string;
   onSearchChange: (value: string) => void;
 }
 
-export const HeroBanner = ({ storeName, heroImageUrl, search, onSearchChange }: HeroBannerProps) => {
+export const HeroBanner = ({ storeName, heroImageUrl, heroImagePosition, search, onSearchChange }: HeroBannerProps) => {
   const { t } = useLanguage();
   const { country, currencySymbol } = useCurrencyContext();
 
   const defaultImage = "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=1920&q=80";
   const backgroundImage = heroImageUrl || defaultImage;
+  const bgPosition = heroImagePosition || "center";
 
   return (
     <section className="relative min-h-[60vh] md:min-h-[70vh] flex items-center justify-center overflow-hidden">
       {/* Background Image */}
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: `url(${backgroundImage})` }}
+        className="absolute inset-0 bg-cover bg-no-repeat"
+        style={{ backgroundImage: `url(${backgroundImage})`, backgroundPosition: bgPosition }}
       />
       
       {/* Overlay */}

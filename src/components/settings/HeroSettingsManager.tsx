@@ -5,11 +5,19 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
 import { Image, Save, Loader2, Upload, X } from "lucide-react";
 
+const POSITION_OPTIONS = [
+  { value: "top", label: "Arriba" },
+  { value: "center", label: "Centro" },
+  { value: "bottom", label: "Abajo" },
+];
+
 export const HeroSettingsManager = () => {
   const [heroImageUrl, setHeroImageUrl] = useState("");
+  const [heroImagePosition, setHeroImagePosition] = useState("center");
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const queryClient = useQueryClient();
@@ -30,6 +38,7 @@ export const HeroSettingsManager = () => {
   useEffect(() => {
     if (storeSettings) {
       setHeroImageUrl((storeSettings as any).hero_image_url || "");
+      setHeroImagePosition((storeSettings as any).hero_image_position || "center");
     }
   }, [storeSettings]);
 
@@ -78,13 +87,19 @@ export const HeroSettingsManager = () => {
       if (storeSettings?.id) {
         const { error } = await supabase
           .from("store_settings")
-          .update({ hero_image_url: heroImageUrl || null } as any)
+          .update({ 
+            hero_image_url: heroImageUrl || null,
+            hero_image_position: heroImagePosition 
+          } as any)
           .eq("id", storeSettings.id);
         if (error) throw error;
       } else {
         const { error } = await supabase
           .from("store_settings")
-          .insert({ hero_image_url: heroImageUrl || null } as any);
+          .insert({ 
+            hero_image_url: heroImageUrl || null,
+            hero_image_position: heroImagePosition 
+          } as any);
         if (error) throw error;
       }
     },
@@ -127,6 +142,7 @@ export const HeroSettingsManager = () => {
               src={heroImageUrl}
               alt="Hero banner preview"
               className="w-full h-full object-cover"
+              style={{ objectPosition: heroImagePosition }}
             />
             <Button
               variant="destructive"
@@ -138,6 +154,26 @@ export const HeroSettingsManager = () => {
             </Button>
           </div>
         )}
+
+        {/* Position Selector */}
+        <div className="space-y-2">
+          <Label>Posición de la imagen</Label>
+          <Select value={heroImagePosition} onValueChange={setHeroImagePosition}>
+            <SelectTrigger>
+              <SelectValue placeholder="Selecciona posición" />
+            </SelectTrigger>
+            <SelectContent>
+              {POSITION_OPTIONS.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            Elige qué parte de la imagen se muestra en el banner
+          </p>
+        </div>
 
         {/* Upload */}
         <div className="space-y-2">
