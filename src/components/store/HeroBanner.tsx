@@ -35,11 +35,11 @@ export const HeroBanner = ({ storeName, heroImageUrl, search, onSearchChange }: 
         <div className="mb-6 flex flex-col items-center gap-2 animate-fade-in">
           <Badge variant="outline" className="gap-2 border-white/30 bg-white/10 px-4 py-2 text-sm backdrop-blur-sm text-white">
             <MapPin className="h-4 w-4" />
-            {country === "BR" ? "Brasil" : "Uruguay"} • Precios en {currencySymbol}
+            {country === "BR" ? "Brasil" : "Uruguay"} • {t("hero.pricesIn")} {currencySymbol}
           </Badge>
           {country === "UY" && (
             <span className="text-xs text-white/70">
-              * Precios en $U son referenciales. El pago se realiza en R$
+              {t("hero.pricesReference")}
             </span>
           )}
         </div>
