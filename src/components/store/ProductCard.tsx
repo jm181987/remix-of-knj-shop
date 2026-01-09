@@ -308,6 +308,7 @@ export function ProductCard({
                 className="sm:hidden gap-1.5 rounded-full px-4 bg-primary text-primary-foreground hover:bg-primary/90"
               >
                 <ShoppingBag className="h-4 w-4" />
+                {t("product.addToCart")}
               </Button>
             )}
           </div>
