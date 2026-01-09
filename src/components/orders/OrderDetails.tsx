@@ -1,9 +1,15 @@
-import { useQuery } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
-import { Loader2, MapPin, Phone, Mail, Package } from "lucide-react";
+import { Loader2, MapPin, Phone, Mail, Package, Link2, Send, ExternalLink, Check } from "lucide-react";
+import { toast } from "sonner";
+import { useWhatsAppNotification } from "@/hooks/useWhatsAppNotification";
 
 interface OrderDetailsProps {
   orderId: string;
@@ -21,6 +27,11 @@ const statusLabels: Record<string, string> = {
 };
 
 export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
+  const [trackingUrl, setTrackingUrl] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
+  const queryClient = useQueryClient();
+  const { sendNotification } = useWhatsAppNotification();
+
   const { data: order, isLoading } = useQuery({
     queryKey: ["order", orderId],
     queryFn: async () => {
@@ -33,6 +44,73 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
       return data;
     },
   });
+
+  // Initialize tracking URL when order loads
+  useEffect(() => {
+    if (order?.tracking_url) {
+      setTrackingUrl(order.tracking_url);
+    } else {
+      setTrackingUrl("");
+    }
+  }, [order?.tracking_url]);
+
+  const handleSaveTracking = async (andNotify: boolean = false) => {
+    if (!trackingUrl.trim()) {
+      toast.error("Ingresa una URL de tracking");
+      return;
+    }
+
+    setIsSaving(true);
+    try {
+      const previousStatus = order?.status;
+      
+      // Update tracking URL and optionally change status to shipped
+      const updateData: any = { tracking_url: trackingUrl.trim() };
+      
+      // If order is paid or preparing, auto-change to shipped when adding tracking
+      if (order?.status === "paid" || order?.status === "preparing") {
+        updateData.status = "shipped";
+      }
+
+      const { error } = await supabase
+        .from("orders")
+        .update(updateData)
+        .eq("id", orderId);
+
+      if (error) throw error;
+
+      // If status changed to shipped, update delivery status too
+      if (updateData.status === "shipped") {
+        await supabase
+          .from("deliveries")
+          .update({ status: "in_transit" })
+          .eq("order_id", orderId);
+      }
+
+      toast.success("Link de tracking guardado");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+      queryClient.invalidateQueries({ queryKey: ["order", orderId] });
+
+      // Send WhatsApp notification if requested
+      if (andNotify && order?.customers?.phone) {
+        const baseUrl = window.location.origin;
+        await sendNotification({
+          orderId: order.id,
+          orderNumber: order.id.slice(0, 8),
+          customerName: order.customers.name || "Cliente",
+          customerPhone: order.customers.phone,
+          status: updateData.status || order.status,
+          total: order.total,
+          deliveryAddress: order.delivery_address,
+          trackingUrl: trackingUrl.trim(),
+        }, previousStatus);
+      }
+    } catch (error: any) {
+      toast.error(error.message || "Error al guardar");
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -67,6 +145,55 @@ export const OrderDetails = ({ orderId, open, onClose }: OrderDetailsProps) => {
                 <p className="text-sm text-muted-foreground">Referencia Pago</p>
                 <p className="font-semibold">{order.payment_reference || "-"}</p>
               </div>
+            </div>
+
+            {/* Tracking URL Section */}
+            <div className="p-4 bg-muted/30 rounded-lg space-y-3">
+              <Label className="flex items-center gap-2 font-semibold">
+                <Link2 className="w-4 h-4" />
+                Link de Tracking
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={trackingUrl}
+                  onChange={(e) => setTrackingUrl(e.target.value)}
+                  placeholder="https://tracking.example.com/..."
+                  className="flex-1"
+                />
+                {order.tracking_url && (
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={() => window.open(order.tracking_url, "_blank")}
+                    title="Abrir link"
+                  >
+                    <ExternalLink className="w-4 h-4" />
+                  </Button>
+                )}
+              </div>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleSaveTracking(false)}
+                  disabled={isSaving || !trackingUrl.trim()}
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin mr-1" /> : <Check className="w-4 h-4 mr-1" />}
+                  Guardar
+                </Button>
+                <Button
+                  size="sm"
+                  onClick={() => handleSaveTracking(true)}
+                  disabled={isSaving || !trackingUrl.trim() || !order.customers?.phone}
+                  className="gap-1"
+                >
+                  {isSaving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
+                  Guardar y Notificar
+                </Button>
+              </div>
+              {order.tracking_url && order.tracking_url !== trackingUrl && (
+                <p className="text-xs text-amber-500">Hay cambios sin guardar</p>
+              )}
             </div>
 
             {/* Customer Info */}
