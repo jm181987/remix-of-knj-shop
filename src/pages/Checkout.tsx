@@ -67,7 +67,7 @@ function CheckoutContent() {
   const navigate = useNavigate();
   const { items, totalPrice, clearCart } = useCartContext();
   const { t, language } = useLanguage();
-  const { country, formatAmount } = useCurrencyContext();
+  const { country, formatAmount, exchangeRate: currencyExchangeRate } = useCurrencyContext();
   const [createdOrder, setCreatedOrder] = useState<{
     id: string;
     total: number;
@@ -591,13 +591,13 @@ function CheckoutContent() {
         </main>
       </div>
 
-      {/* PIX for Brazil via MercadoPago Brasil (Portuguese) - valor en BRL */}
+      {/* PIX for Brazil via MercadoPago Brasil (Portuguese) - valor convertido a BRL */}
       {createdOrder && language === "pt" && (
         <PixBrasilPaymentDialog
           open={!!createdOrder}
           onOpenChange={(open) => !open && setCreatedOrder(null)}
           orderId={createdOrder.id}
-          orderTotal={createdOrder.total}
+          orderTotal={createdOrder.total / (currencyExchangeRate || 8.5)}
           onPaymentConfirmed={handlePaymentConfirmed}
         />
       )}
