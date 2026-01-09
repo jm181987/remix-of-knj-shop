@@ -7,7 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { LayoutTemplate, Save, Loader2, Instagram, Facebook, Mail, MapPin, User } from "lucide-react";
+import { LayoutTemplate, Save, Loader2, Instagram, Facebook, Mail, MapPin } from "lucide-react";
 
 interface FooterSettings {
   footer_instagram: string;
@@ -15,8 +15,6 @@ interface FooterSettings {
   footer_email: string;
   footer_location: string;
   footer_description: string;
-  footer_developer_name: string;
-  footer_developer_link: string;
 }
 
 export const FooterSettingsManager = () => {
@@ -26,8 +24,6 @@ export const FooterSettingsManager = () => {
     footer_email: "",
     footer_location: "Rivera, Uruguay 🇺🇾",
     footer_description: "",
-    footer_developer_name: "Jorge Marquez",
-    footer_developer_link: "https://wa.me/59894920949",
   });
 
   const queryClient = useQueryClient();
@@ -53,8 +49,6 @@ export const FooterSettingsManager = () => {
         footer_email: (storeSettings as any).footer_email || "",
         footer_location: (storeSettings as any).footer_location || "Rivera, Uruguay 🇺🇾",
         footer_description: (storeSettings as any).footer_description || "",
-        footer_developer_name: (storeSettings as any).footer_developer_name || "Jorge Marquez",
-        footer_developer_link: (storeSettings as any).footer_developer_link || "https://wa.me/59894920949",
       });
     }
   }, [storeSettings]);
@@ -174,35 +168,6 @@ export const FooterSettingsManager = () => {
           </div>
         </div>
 
-        {/* Developer Credit */}
-        <div className="space-y-4 pt-4 border-t border-border/30">
-          <h4 className="font-medium text-sm text-muted-foreground flex items-center gap-2">
-            <User className="w-4 h-4" />
-            Crédito del Desarrollador
-          </h4>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="footer_developer_name">Nombre</Label>
-              <Input
-                id="footer_developer_name"
-                value={settings.footer_developer_name}
-                onChange={(e) => setSettings({ ...settings, footer_developer_name: e.target.value })}
-                placeholder="Jorge Marquez"
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="footer_developer_link">Link (WhatsApp u otro)</Label>
-              <Input
-                id="footer_developer_link"
-                value={settings.footer_developer_link}
-                onChange={(e) => setSettings({ ...settings, footer_developer_link: e.target.value })}
-                placeholder="https://wa.me/59894920949"
-              />
-            </div>
-          </div>
-        </div>
 
         <Button
           type="button"
