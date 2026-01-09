@@ -42,7 +42,7 @@ export function ProductGalleryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-[95vw] w-[95vw] h-[95vh] p-0 bg-background/95 backdrop-blur-md border-border/50"
+        className="max-w-[100vw] w-screen h-screen max-h-screen p-0 bg-background border-none rounded-none"
         onKeyDown={handleKeyDown}
       >
         <VisuallyHidden>
@@ -57,60 +57,65 @@ export function ProductGalleryDialog({
           <X className="h-5 w-5" />
         </button>
 
-        {/* Main image container */}
-        <div className="relative flex items-center justify-center h-full w-full p-2 sm:p-4">
-          <img
-            src={images[currentIndex]}
-            alt={`${productName} - ${currentIndex + 1}`}
-            className="h-full w-full object-contain"
-          />
+        {/* Main image container - uses flex to center image and leave space for thumbnails */}
+        <div className="flex flex-col h-full w-full">
+          <div className="flex-1 flex items-center justify-center p-4 pb-24 min-h-0">
+            <img
+              src={images[currentIndex]}
+              alt={`${productName} - ${currentIndex + 1}`}
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
 
           {/* Navigation arrows */}
           {images.length > 1 && (
             <>
               <button
                 onClick={goToPrevious}
-                className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors shadow-lg"
+                className="absolute left-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors shadow-lg z-20"
               >
                 <ChevronLeft className="h-6 w-6" />
               </button>
               <button
                 onClick={goToNext}
-                className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors shadow-lg"
+                className="absolute right-4 top-1/2 -translate-y-1/2 h-12 w-12 rounded-full bg-background/80 flex items-center justify-center hover:bg-background transition-colors shadow-lg z-20"
               >
                 <ChevronRight className="h-6 w-6" />
               </button>
             </>
           )}
 
-          {/* Image counter */}
-          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 bg-background/80 backdrop-blur-sm px-4 py-2 rounded-full text-sm font-medium">
-            {currentIndex + 1} / {images.length}
+          {/* Bottom bar with thumbnails and counter */}
+          <div className="absolute bottom-0 left-0 right-0 flex flex-col items-center gap-2 p-4 bg-gradient-to-t from-background via-background/80 to-transparent">
+            {/* Thumbnail strip */}
+            {images.length > 1 && (
+              <div className="flex gap-2 p-2 bg-background/60 backdrop-blur-sm rounded-lg max-w-[90%] overflow-x-auto">
+                {images.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentIndex(idx)}
+                    className={`flex-shrink-0 h-14 w-14 rounded-md overflow-hidden transition-all ${
+                      idx === currentIndex
+                        ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                        : "opacity-60 hover:opacity-100"
+                    }`}
+                  >
+                    <img
+                      src={img}
+                      alt={`Thumbnail ${idx + 1}`}
+                      className="h-full w-full object-cover"
+                    />
+                  </button>
+                ))}
+              </div>
+            )}
+
+            {/* Image counter */}
+            <div className="bg-background/80 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-medium">
+              {currentIndex + 1} / {images.length}
+            </div>
           </div>
         </div>
-
-        {/* Thumbnail strip */}
-        {images.length > 1 && (
-          <div className="absolute bottom-20 left-1/2 -translate-x-1/2 flex gap-2 p-2 bg-background/60 backdrop-blur-sm rounded-lg max-w-[90%] overflow-x-auto">
-            {images.map((img, idx) => (
-              <button
-                key={idx}
-                onClick={() => setCurrentIndex(idx)}
-                className={`flex-shrink-0 h-16 w-16 rounded-md overflow-hidden transition-all ${
-                  idx === currentIndex
-                    ? "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                    : "opacity-60 hover:opacity-100"
-                }`}
-              >
-                <img
-                  src={img}
-                  alt={`Thumbnail ${idx + 1}`}
-                  className="h-full w-full object-cover"
-                />
-              </button>
-            ))}
-          </div>
-        )}
       </DialogContent>
     </Dialog>
   );
