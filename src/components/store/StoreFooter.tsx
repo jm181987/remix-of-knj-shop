@@ -128,6 +128,18 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
             <span>🇺🇾 Uruguay</span>
           </div>
         </div>
+
+        {/* Developer Credit */}
+        <div className="mt-6 text-center">
+          <a 
+            href="https://wa.me/59894920949" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            className="text-xs text-muted-foreground/40 hover:text-primary transition-colors"
+          >
+            {language === "pt" ? "Desenvolvido por" : "Desarrollado por"} Jorge Marquez
+          </a>
+        </div>
       </div>
     </footer>
   );
