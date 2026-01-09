@@ -42,7 +42,7 @@ export function ProductGalleryDialog({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent 
-        className="max-w-4xl w-[95vw] h-[90vh] p-0 bg-background/95 backdrop-blur-md border-border/50"
+        className="max-w-[95vw] w-[95vw] h-[95vh] p-0 bg-background/95 backdrop-blur-md border-border/50"
         onKeyDown={handleKeyDown}
       >
         <VisuallyHidden>
@@ -58,11 +58,11 @@ export function ProductGalleryDialog({
         </button>
 
         {/* Main image container */}
-        <div className="relative flex items-center justify-center h-full p-4">
+        <div className="relative flex items-center justify-center h-full w-full p-2 sm:p-4">
           <img
             src={images[currentIndex]}
             alt={`${productName} - ${currentIndex + 1}`}
-            className="max-h-full max-w-full object-contain rounded-lg"
+            className="h-full w-full object-contain"
           />
 
           {/* Navigation arrows */}
