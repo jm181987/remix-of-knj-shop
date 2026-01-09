@@ -31,10 +31,10 @@ export function StoreHeader({ storeName }: StoreHeaderProps) {
   const isAdmin = authStatus?.isAdmin ?? false;
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/20 bg-background/60 backdrop-blur-2xl">
-      <div className="container mx-auto flex h-14 items-center justify-between px-4 py-1">
-        <Link to="/store" className="group flex items-center gap-3">
-          <img src={storeLogo} alt="Musa Fitness" className="h-12 w-auto object-contain transition-transform duration-300 group-hover:scale-105" />
+    <header className="sticky top-0 z-50 border-b border-border/20 bg-background/60 backdrop-blur-2xl overflow-visible">
+      <div className="container mx-auto flex h-14 items-center justify-between px-4 py-1 overflow-visible">
+        <Link to="/store" className="group flex items-center gap-3 overflow-visible">
+          <img src={storeLogo} alt="Musa Fitness" className="h-20 w-auto object-contain transition-transform duration-300 group-hover:scale-105 -my-3" />
           <span className="text-xl font-bold tracking-tight transition-colors group-hover:text-primary">
             {storeName}
           </span>
