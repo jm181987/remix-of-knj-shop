@@ -42,8 +42,28 @@ export const UsersManager = () => {
 
       if (!roles || roles.length === 0) return [];
 
-      // Get all user IDs
-      const userIds = roles.map(r => r.user_id);
+      // Group roles by user_id and keep the highest role
+      const rolesPriority: Record<string, number> = { superadmin: 3, admin: 2, driver: 1 };
+      const userRolesMap: Record<string, { role: string; created_at: string; allRoles: string[] }> = {};
+      
+      roles.forEach(r => {
+        if (!userRolesMap[r.user_id]) {
+          userRolesMap[r.user_id] = { role: r.role, created_at: r.created_at, allRoles: [r.role] };
+        } else {
+          userRolesMap[r.user_id].allRoles.push(r.role);
+          // Keep highest priority role
+          if (rolesPriority[r.role] > rolesPriority[userRolesMap[r.user_id].role]) {
+            userRolesMap[r.user_id].role = r.role;
+          }
+          // Keep earliest created_at
+          if (r.created_at < userRolesMap[r.user_id].created_at) {
+            userRolesMap[r.user_id].created_at = r.created_at;
+          }
+        }
+      });
+
+      // Get unique user IDs
+      const userIds = Object.keys(userRolesMap);
 
       // Get emails from edge function
       const { data: emailsData, error: emailsError } = await supabase.functions.invoke("manage-user", {
@@ -65,11 +85,11 @@ export const UsersManager = () => {
         if (d.email) driverEmails[d.user_id] = d.email;
       });
 
-      const usersWithEmails: UserWithRole[] = roles.map(role => ({
-        id: role.user_id,
-        email: emails[role.user_id] || driverEmails[role.user_id] || "Email no disponible",
-        role: role.role as "admin" | "driver" | "superadmin",
-        created_at: role.created_at,
+      const usersWithEmails: UserWithRole[] = userIds.map(userId => ({
+        id: userId,
+        email: emails[userId] || driverEmails[userId] || "Email no disponible",
+        role: userRolesMap[userId].role as "admin" | "driver" | "superadmin",
+        created_at: userRolesMap[userId].created_at,
       }));
 
       return usersWithEmails;
