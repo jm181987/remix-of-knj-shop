@@ -6,12 +6,12 @@ import {
   Truck, 
   Users, 
   Settings,
-  LogOut,
-  TrendingUp
+  LogOut
 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
+import musaLogo from "@/assets/musa-logo.png";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
@@ -36,8 +36,8 @@ export const Sidebar = () => {
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col">
       <div className="p-6 border-b border-sidebar-border">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center">
-            <TrendingUp className="w-5 h-5 text-primary-foreground" />
+          <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center overflow-hidden">
+            <img src={musaLogo} alt="Musa Fitness" className="w-8 h-8 object-contain" />
           </div>
           <div>
             <h1 className="text-lg font-bold text-sidebar-foreground">Musa Fitness</h1>
