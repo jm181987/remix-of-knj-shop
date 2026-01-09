@@ -1,0 +1,160 @@
+import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+
+export type Language = "es" | "pt";
+
+interface LanguageContextType {
+  language: Language;
+  setLanguage: (lang: Language) => void;
+  t: (key: string) => string;
+}
+
+const translations: Record<Language, Record<string, string>> = {
+  es: {
+    // Store
+    "store.welcome": "Bienvenido a",
+    "store.subtitle": "Descubre nuestros productos y realiza tu compra de forma rápida y segura con Mercado Pago",
+    "store.search": "Buscar productos...",
+    "store.noProducts": "No hay productos disponibles",
+    "store.rights": "Todos los derechos reservados.",
+    "store.onlineStore": "Tienda Online",
+    "store.buyAt": "Compra en",
+    "store.qualityProducts": "Productos de calidad con Mercado Pago.",
+    
+    // Product
+    "product.addToCart": "Agregar al carrito",
+    "product.outOfStock": "Sin stock",
+    "product.pickupAvailable": "Retiro en tienda disponible",
+    
+    // Cart
+    "cart.title": "Carrito",
+    "cart.empty": "Tu carrito está vacío",
+    "cart.total": "Total",
+    "cart.checkout": "Finalizar Compra",
+    "cart.remove": "Eliminar",
+    
+    // Checkout
+    "checkout.title": "Finalizar Compra",
+    "checkout.customerInfo": "Información del Cliente",
+    "checkout.name": "Nombre completo",
+    "checkout.email": "Correo electrónico",
+    "checkout.phone": "Teléfono",
+    "checkout.shippingMethod": "Método de Envío",
+    "checkout.selectLocation": "Haz clic en el mapa para seleccionar tu ubicación de entrega",
+    "checkout.locationSelected": "Ubicación seleccionada",
+    "checkout.orderSummary": "Resumen del Pedido",
+    "checkout.subtotal": "Subtotal",
+    "checkout.shipping": "Envío",
+    "checkout.payWithPix": "Pagar con PIX",
+    "checkout.processing": "Procesando...",
+    "checkout.notes": "Notas adicionales",
+    "checkout.notesPlaceholder": "Instrucciones especiales para la entrega...",
+    
+    // Shipping methods
+    "shipping.pickup": "Retiro en tienda",
+    "shipping.pickupDesc": "Gratis - Recoge en nuestra tienda",
+    "shipping.local": "Entrega local",
+    "shipping.localDesc": "Entrega en tu dirección",
+    "shipping.sedex": "Sedex Brasil",
+    "shipping.sedexDesc": "Envío nacional Brasil",
+    "shipping.turil": "Turil Uruguay",
+    "shipping.turilDesc": "Envío a Uruguay",
+    
+    // WhatsApp
+    "whatsapp.contact": "Contáctanos por WhatsApp",
+    
+    // Language
+    "language.select": "Idioma",
+    "language.es": "Español",
+    "language.pt": "Português",
+  },
+  pt: {
+    // Store
+    "store.welcome": "Bem-vindo a",
+    "store.subtitle": "Descubra nossos produtos e faça sua compra de forma rápida e segura com pagamento PIX",
+    "store.search": "Buscar produtos...",
+    "store.noProducts": "Não há produtos disponíveis",
+    "store.rights": "Todos os direitos reservados.",
+    "store.onlineStore": "Loja Online",
+    "store.buyAt": "Compre em",
+    "store.qualityProducts": "Produtos de qualidade com pagamento PIX.",
+    
+    // Product
+    "product.addToCart": "Adicionar ao carrinho",
+    "product.outOfStock": "Sem estoque",
+    "product.pickupAvailable": "Retirada na loja disponível",
+    
+    // Cart
+    "cart.title": "Carrinho",
+    "cart.empty": "Seu carrinho está vazio",
+    "cart.total": "Total",
+    "cart.checkout": "Finalizar Compra",
+    "cart.remove": "Remover",
+    
+    // Checkout
+    "checkout.title": "Finalizar Compra",
+    "checkout.customerInfo": "Informações do Cliente",
+    "checkout.name": "Nome completo",
+    "checkout.email": "E-mail",
+    "checkout.phone": "Telefone",
+    "checkout.shippingMethod": "Método de Envio",
+    "checkout.selectLocation": "Clique no mapa para selecionar sua localização de entrega",
+    "checkout.locationSelected": "Localização selecionada",
+    "checkout.orderSummary": "Resumo do Pedido",
+    "checkout.subtotal": "Subtotal",
+    "checkout.shipping": "Frete",
+    "checkout.payWithPix": "Pagar com PIX",
+    "checkout.processing": "Processando...",
+    "checkout.notes": "Notas adicionais",
+    "checkout.notesPlaceholder": "Instruções especiais para a entrega...",
+    
+    // Shipping methods
+    "shipping.pickup": "Retirada na loja",
+    "shipping.pickupDesc": "Grátis - Retire em nossa loja",
+    "shipping.local": "Entrega local",
+    "shipping.localDesc": "Entrega no seu endereço",
+    "shipping.sedex": "Sedex Brasil",
+    "shipping.sedexDesc": "Envio nacional Brasil",
+    "shipping.turil": "Turil Uruguai",
+    "shipping.turilDesc": "Envio para o Uruguai",
+    
+    // WhatsApp
+    "whatsapp.contact": "Entre em contato pelo WhatsApp",
+    
+    // Language
+    "language.select": "Idioma",
+    "language.es": "Español",
+    "language.pt": "Português",
+  },
+};
+
+const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
+
+export function LanguageProvider({ children }: { children: ReactNode }) {
+  const [language, setLanguageState] = useState<Language>(() => {
+    const saved = localStorage.getItem("store-language");
+    return (saved as Language) || "es";
+  });
+
+  const setLanguage = (lang: Language) => {
+    setLanguageState(lang);
+    localStorage.setItem("store-language", lang);
+  };
+
+  const t = (key: string): string => {
+    return translations[language][key] || key;
+  };
+
+  return (
+    <LanguageContext.Provider value={{ language, setLanguage, t }}>
+      {children}
+    </LanguageContext.Provider>
+  );
+}
+
+export function useLanguage() {
+  const context = useContext(LanguageContext);
+  if (!context) {
+    throw new Error("useLanguage must be used within a LanguageProvider");
+  }
+  return context;
+}
