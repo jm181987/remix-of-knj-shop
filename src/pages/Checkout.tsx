@@ -190,7 +190,7 @@ function CheckoutContent() {
         coords.lon
       );
       
-      const options = getShippingOptions(distance, baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight);
+      const options = getShippingOptions(distance, baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight, country);
       setShippingOptions(options);
       
       // Auto-select pickup if available, then local, otherwise first available option
@@ -214,21 +214,27 @@ function CheckoutContent() {
       
       setIsCalculating(false);
     },
-    [storeLat, storeLon, baseFee, perKmFee, maxKm, sedexFee, turilFee, selectedShipping, pickupEnabled, totalCartWeight]
+    [storeLat, storeLon, baseFee, perKmFee, maxKm, sedexFee, turilFee, selectedShipping, pickupEnabled, totalCartWeight, country]
   );
 
-  // Initialize and update shipping options when weight changes
+  // Initialize and update shipping options when weight or country changes
   useEffect(() => {
     const options = getShippingOptions(
       deliveryInfo.calculated ? deliveryInfo.distance : 0, 
-      baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight
+      baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight, country
     );
     if (!deliveryInfo.calculated) {
       setShippingOptions(options.filter(o => o.id !== 'local'));
     } else {
       setShippingOptions(options);
     }
-  }, [baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight, deliveryInfo]);
+    // Auto-select first available option when country changes
+    const currentOptionAvailable = options.find(o => o.id === selectedShipping && o.available);
+    if (!currentOptionAvailable) {
+      const firstAvailable = options.find(o => o.available);
+      if (firstAvailable) setSelectedShipping(firstAvailable.id);
+    }
+  }, [baseFee, perKmFee, maxKm, sedexFee, turilFee, pickupEnabled, totalCartWeight, deliveryInfo, country]);
   const currentShippingOption = shippingOptions.find(o => o.id === selectedShipping);
   const currentDeliveryFee = currentShippingOption?.fee || 0;
   const currentDeliveryFeeCurrency = currentShippingOption?.currency || 'BRL';
