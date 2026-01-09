@@ -2,6 +2,7 @@ import { CreditCard, QrCode, Instagram, Facebook, Mail, MapPin, Phone } from "lu
 import { useLanguage } from "@/contexts/LanguageContext";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import mercadopagoLogo from "@/assets/mercadopago-logo.png";
 
 interface StoreFooterProps {
   storeName: string;
@@ -66,13 +67,9 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
               </div>
               <div className="mt-3 flex items-center gap-2">
                 <img 
-                  src="https://imgmp.mlstatic.com/org-img/MLB/MP/LOGO/MP-logo-FULL-color.svg" 
+                  src={mercadopagoLogo} 
                   alt="MercadoPago" 
                   className="h-6"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.style.display = 'none';
-                  }}
                 />
               </div>
             </div>
