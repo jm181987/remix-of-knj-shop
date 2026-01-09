@@ -7,10 +7,10 @@ import { MapPin, List } from "lucide-react";
 const Deliveries = () => {
   return (
     <DashboardLayout>
-      <div className="space-y-6">
+      <div className="space-y-4 md:space-y-6">
         <div>
-          <h1 className="text-3xl font-bold text-foreground">Entregas</h1>
-          <p className="text-muted-foreground mt-1">Gestiona y rastrea todas las entregas</p>
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">Entregas</h1>
+          <p className="text-muted-foreground mt-1 text-sm md:text-base">Gestiona y rastrea todas las entregas</p>
         </div>
 
         <Tabs defaultValue="list" className="w-full">

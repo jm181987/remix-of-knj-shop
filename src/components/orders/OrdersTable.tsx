@@ -206,8 +206,8 @@ export const OrdersTable = () => {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row gap-4 justify-between">
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-between">
         <div className="relative flex-1 max-w-md">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
           <Input
@@ -218,7 +218,7 @@ export const OrdersTable = () => {
           />
         </div>
         <Select value={statusFilter} onValueChange={setStatusFilter}>
-          <SelectTrigger className="w-[180px] input-modern">
+          <SelectTrigger className="w-full sm:w-[180px] input-modern">
             <SelectValue placeholder="Filtrar por estado" />
           </SelectTrigger>
           <SelectContent>
@@ -233,26 +233,175 @@ export const OrdersTable = () => {
         </Select>
       </div>
 
-      <div className="glass-card overflow-hidden">
+      {/* Mobile Cards View */}
+      <div className="md:hidden space-y-3">
+        {isLoading ? (
+          [...Array(3)].map((_, i) => (
+            <div key={i} className="glass-card p-4">
+              <div className="h-24 bg-muted/50 rounded animate-pulse" />
+            </div>
+          ))
+        ) : orders && orders.length > 0 ? (
+          orders.map((order) => (
+            <div key={order.id} className="glass-card p-4 space-y-3">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="font-semibold text-foreground">#{order.id.slice(0, 8)}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {format(new Date(order.created_at), "dd MMM yyyy, HH:mm", { locale: es })}
+                  </p>
+                </div>
+                <Select
+                  value={order.status}
+                  onValueChange={(value) => updateStatus(order.id, value, order)}
+                >
+                  <SelectTrigger className={`w-[110px] h-7 text-xs ${statusColors[order.status]} border-0`}>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(statusLabels).map(([value, label]) => (
+                      <SelectItem key={value} value={value}>
+                        {label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium text-sm">{order.customers?.name || "Sin cliente"}</p>
+                  {order.customers?.phone && (
+                    <p className="text-xs text-muted-foreground">{order.customers.phone}</p>
+                  )}
+                </div>
+                <div className="text-right">
+                  <p className="font-semibold flex items-center gap-1">
+                    {getCountryFlag(order)}
+                    {formatOrderPrice(Number(order.total), order)}
+                  </p>
+                  {order.payment_method === "mercadopago" && (
+                    <div className="flex items-center justify-end gap-1 text-xs text-blue-600">
+                      <CreditCard className="w-3 h-3" />
+                      MP
+                    </div>
+                  )}
+                  {order.payment_method === "pix" && (
+                    <div className="flex items-center justify-end gap-1 text-xs text-green-600">
+                      <QrCode className="w-3 h-3" />
+                      PIX
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {order.delivery_address && (
+                <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                  <MapPin className="w-3 h-3 mt-0.5 flex-shrink-0" />
+                  <span className="line-clamp-2">{order.delivery_address}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-end gap-1 pt-2 border-t border-border/50">
+                {order.status === "pending" && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="gap-1 text-xs h-8"
+                    onClick={() => setPixPaymentOrder({ 
+                      id: order.id, 
+                      total: Number(order.total) + (Number(order.delivery_fee) || 0) 
+                    })}
+                  >
+                    <QrCode className="w-3 h-3" />
+                    PIX
+                  </Button>
+                )}
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => handleSendWhatsApp(order)}
+                  disabled={!order.customers?.phone}
+                >
+                  <MessageCircle className="w-4 h-4 text-[#25D366]" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => setSelectedOrder(order.id)}
+                >
+                  <Eye className="w-4 h-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => updateStatus(order.id, "shipped", order)}
+                  disabled={order.status !== "preparing" && order.status !== "paid"}
+                >
+                  <Truck className="w-4 h-4" />
+                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 text-destructive hover:text-destructive"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent className="max-w-[90vw] sm:max-w-lg">
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>¿Eliminar pedido?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Esta acción eliminará el pedido #{order.id.slice(0, 8)} y su entrega asociada.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                      <AlertDialogAction
+                        onClick={() => deleteOrder(order.id)}
+                        className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                      >
+                        Eliminar
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="glass-card p-8 text-center text-muted-foreground">
+            No hay pedidos
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Table View */}
+      <div className="hidden md:block glass-card overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
               <tr className="border-b border-border/50 bg-muted/30">
-                <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Pedido</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Cliente</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Productos</th>
-                <th className="text-left py-4 px-6 text-sm font-medium text-muted-foreground">Dirección</th>
-                <th className="text-center py-4 px-6 text-sm font-medium text-muted-foreground">Pago</th>
-                <th className="text-right py-4 px-6 text-sm font-medium text-muted-foreground">Total</th>
-                <th className="text-center py-4 px-6 text-sm font-medium text-muted-foreground">Estado</th>
-                <th className="text-right py-4 px-6 text-sm font-medium text-muted-foreground">Acciones</th>
+                <th className="text-left py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Pedido</th>
+                <th className="text-left py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Cliente</th>
+                <th className="text-left py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground hidden lg:table-cell">Productos</th>
+                <th className="text-left py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground hidden xl:table-cell">Dirección</th>
+                <th className="text-center py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Pago</th>
+                <th className="text-right py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Total</th>
+                <th className="text-center py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Estado</th>
+                <th className="text-right py-4 px-4 lg:px-6 text-sm font-medium text-muted-foreground">Acciones</th>
               </tr>
             </thead>
             <tbody>
               {isLoading ? (
                 [...Array(5)].map((_, i) => (
                   <tr key={i} className="table-row">
-                    <td colSpan={8} className="py-4 px-6">
+                    <td colSpan={8} className="py-4 px-4 lg:px-6">
                       <div className="h-12 bg-muted/50 rounded animate-pulse" />
                     </td>
                   </tr>
@@ -260,7 +409,7 @@ export const OrdersTable = () => {
               ) : orders && orders.length > 0 ? (
                 orders.map((order) => (
                   <tr key={order.id} className="table-row">
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 lg:px-6">
                       <div>
                         <p className="font-medium text-foreground">
                           #{order.id.slice(0, 8)}
@@ -270,7 +419,7 @@ export const OrdersTable = () => {
                         </p>
                       </div>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 lg:px-6">
                       <p className="font-medium text-foreground">
                         {order.customers?.name || "Sin cliente"}
                       </p>
@@ -278,7 +427,7 @@ export const OrdersTable = () => {
                         <p className="text-sm text-muted-foreground">{order.customers.phone}</p>
                       )}
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 lg:px-6 hidden lg:table-cell">
                       <div className="text-sm text-muted-foreground max-w-[200px]">
                         {order.order_items && order.order_items.length > 0 ? (
                           <ul className="space-y-0.5">
@@ -298,7 +447,7 @@ export const OrdersTable = () => {
                         )}
                       </div>
                     </td>
-                    <td className="py-4 px-6">
+                    <td className="py-4 px-4 lg:px-6 hidden xl:table-cell">
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-muted-foreground" />
                         <span className="text-sm text-muted-foreground line-clamp-1 max-w-[200px]">
@@ -311,22 +460,22 @@ export const OrdersTable = () => {
                         </p>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-center">
+                    <td className="py-4 px-4 lg:px-6 text-center">
                       {order.payment_method === "mercadopago" ? (
                         <div className="flex items-center justify-center gap-1.5">
                           <CreditCard className="w-4 h-4 text-blue-500" />
-                          <span className="text-sm font-medium text-blue-600">MercadoPago</span>
+                          <span className="text-sm font-medium text-blue-600 hidden lg:inline">MercadoPago</span>
                         </div>
                       ) : order.payment_method === "pix" ? (
                         <div className="flex items-center justify-center gap-1.5">
                           <QrCode className="w-4 h-4 text-green-500" />
-                          <span className="text-sm font-medium text-green-600">PIX</span>
+                          <span className="text-sm font-medium text-green-600 hidden lg:inline">PIX</span>
                         </div>
                       ) : (
                         <span className="text-sm text-muted-foreground">-</span>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-right">
+                    <td className="py-4 px-4 lg:px-6 text-right">
                       <p className="font-semibold text-foreground flex items-center justify-end gap-1.5">
                         <span>{getCountryFlag(order)}</span>
                         {formatOrderPrice(Number(order.total), order)}
@@ -337,12 +486,12 @@ export const OrdersTable = () => {
                         </p>
                       )}
                     </td>
-                    <td className="py-4 px-6 text-center">
+                    <td className="py-4 px-4 lg:px-6 text-center">
                       <Select
                         value={order.status}
                         onValueChange={(value) => updateStatus(order.id, value, order)}
                       >
-                        <SelectTrigger className={`w-[130px] h-8 text-xs ${statusColors[order.status]} border-0`}>
+                        <SelectTrigger className={`w-[110px] lg:w-[130px] h-8 text-xs ${statusColors[order.status]} border-0`}>
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
@@ -354,13 +503,13 @@ export const OrdersTable = () => {
                         </SelectContent>
                       </Select>
                     </td>
-                    <td className="py-4 px-6">
-                      <div className="flex items-center justify-end gap-2">
+                    <td className="py-4 px-4 lg:px-6">
+                      <div className="flex items-center justify-end gap-1 lg:gap-2">
                         {order.status === "pending" && (
                           <Button
                             variant="outline"
                             size="sm"
-                            className="gap-1 text-xs"
+                            className="gap-1 text-xs hidden lg:flex"
                             onClick={() => setPixPaymentOrder({ 
                               id: order.id, 
                               total: Number(order.total) + (Number(order.delivery_fee) || 0) 

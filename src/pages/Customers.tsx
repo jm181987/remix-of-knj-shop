@@ -191,21 +191,21 @@ const Customers = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="space-y-4 md:space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Clientes</h1>
-            <p className="text-muted-foreground mt-1">Gestiona tu base de clientes</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Clientes</h1>
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">Gestiona tu base de clientes</p>
           </div>
-          <Button onClick={() => setIsFormOpen(true)} className="gap-2">
+          <Button onClick={() => setIsFormOpen(true)} className="gap-2 w-full sm:w-auto">
             <Plus className="w-4 h-4" />
             Nuevo Cliente
           </Button>
         </div>
 
         <Card className="border-border/50">
-          <CardContent className="p-6">
-            <div className="relative mb-6">
+          <CardContent className="p-4 md:p-6">
+            <div className="relative mb-4 md:mb-6">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
               <Input
                 placeholder="Buscar clientes..."
@@ -215,7 +215,94 @@ const Customers = () => {
               />
             </div>
 
-            <div className="rounded-lg border border-border overflow-hidden">
+            {/* Mobile Cards View */}
+            <div className="md:hidden space-y-3">
+              {isLoading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="p-4 border rounded-lg">
+                    <Skeleton className="h-20" />
+                  </div>
+                ))
+              ) : filteredCustomers?.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No se encontraron clientes
+                </div>
+              ) : (
+                filteredCustomers?.map((customer) => (
+                  <div key={customer.id} className="p-4 border border-border rounded-lg space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-medium">{customer.name}</p>
+                        {customer.address && (
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-1">
+                            <MapPin className="w-3 h-3" />
+                            {customer.address}
+                          </p>
+                        )}
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {customer.orders && customer.orders.length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8"
+                            onClick={() => setSelectedCustomer(customer)}
+                          >
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                        )}
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() => handleEdit(customer)}
+                        >
+                          <Pencil className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          onClick={() => handleDelete(customer.id)}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between text-sm">
+                      <div className="space-y-1">
+                        {customer.email && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Mail className="w-3 h-3" />
+                            <span className="truncate max-w-[150px]">{customer.email}</span>
+                          </div>
+                        )}
+                        {customer.phone && (
+                          <div className="flex items-center gap-2 text-muted-foreground">
+                            <Phone className="w-3 h-3" />
+                            {customer.phone}
+                          </div>
+                        )}
+                      </div>
+                      {customer.orders && customer.orders.length > 0 && (
+                        <div className="text-right">
+                          <div className="flex items-center gap-1 text-primary">
+                            <ShoppingBag className="w-3 h-3" />
+                            <span className="font-medium">{customer.orders.length}</span>
+                          </div>
+                          <p className="text-xs text-muted-foreground">
+                            ${customer.orders.reduce((sum, o) => sum + Number(o.total), 0).toFixed(2)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden md:block rounded-lg border border-border overflow-hidden">
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50">
@@ -325,7 +412,7 @@ const Customers = () => {
         </Card>
 
         <Dialog open={isFormOpen} onOpenChange={handleClose}>
-          <DialogContent>
+          <DialogContent className="max-w-[90vw] sm:max-w-md">
             <DialogHeader>
               <DialogTitle>
                 {editingCustomer ? "Editar Cliente" : "Nuevo Cliente"}

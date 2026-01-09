@@ -62,13 +62,13 @@ const Dashboard = () => {
 
   return (
     <DashboardLayout>
-      <div className="space-y-8">
+      <div className="space-y-6 md:space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-            <p className="text-muted-foreground mt-1">Resumen general de tu negocio</p>
+            <h1 className="text-2xl md:text-3xl font-bold text-foreground">Dashboard</h1>
+            <p className="text-muted-foreground mt-1 text-sm md:text-base">Resumen general de tu negocio</p>
           </div>
-          <Button asChild>
+          <Button asChild className="w-full sm:w-auto">
             <Link to="/store" target="_blank">
               <ExternalLink className="w-4 h-4 mr-2" />
               Ver Mi Tienda
@@ -76,7 +76,7 @@ const Dashboard = () => {
           </Button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
           <StatCard
             title="Ingresos Totales"
             value={`$${stats?.totalRevenue?.toLocaleString() || 0}`}
