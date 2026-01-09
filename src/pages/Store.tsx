@@ -21,7 +21,7 @@ function StoreContent() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("store_settings")
-        .select("store_name, whatsapp_number, hero_image_url")
+        .select("store_name, whatsapp_number, hero_image_url, hero_image_position")
         .maybeSingle();
       if (error) throw error;
       return data;
@@ -50,6 +50,7 @@ function StoreContent() {
   const storeName = storeSettings?.store_name || "Tienda";
   const whatsappNumber = (storeSettings as any)?.whatsapp_number;
   const heroImageUrl = (storeSettings as any)?.hero_image_url;
+  const heroImagePosition = (storeSettings as any)?.hero_image_position;
 
   return (
     <>
@@ -69,6 +70,7 @@ function StoreContent() {
           <HeroBanner
             storeName={storeName}
             heroImageUrl={heroImageUrl}
+            heroImagePosition={heroImagePosition}
             search={search}
             onSearchChange={setSearch}
           />
