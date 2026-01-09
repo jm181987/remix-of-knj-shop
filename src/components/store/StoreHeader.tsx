@@ -5,7 +5,7 @@ import { Settings } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import storeLogo from "@/assets/knj-logo.png";
+import storeLogo from "@/assets/musa-logo.png";
 
 interface StoreHeaderProps {
   storeName: string;
