@@ -222,12 +222,12 @@ export function ProductCard({
 
         {/* Quick add button - appears on hover */}
         {!hasVariants && (
-          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100">
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100 z-30">
             <Button
               size="sm"
               onClick={handleAddToCart}
               disabled={currentStock === 0}
-              className="gap-2 rounded-full px-6 shadow-xl backdrop-blur-sm"
+              className="gap-2 rounded-full px-6 shadow-xl bg-primary text-primary-foreground hover:bg-primary/90"
             >
               <ShoppingBag className="h-4 w-4" />
               {t("product.addToCart")}
@@ -287,15 +287,6 @@ export function ProductCard({
           <span className="text-2xl font-bold text-primary glow-text">
             {formatAmount(currentPrice)}
           </span>
-          <Button
-            size="icon"
-            variant="outline"
-            onClick={handleAddToCart}
-            disabled={currentStock === 0 || (hasVariants && !selectedVariant)}
-            className="h-10 w-10 rounded-full border-primary/30 bg-primary/10 text-primary transition-all hover:bg-primary hover:text-primary-foreground hover:shadow-lg"
-          >
-            <Plus className="h-5 w-5" />
-          </Button>
         </div>
       </div>
     </div>
