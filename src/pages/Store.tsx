@@ -16,7 +16,7 @@ function StoreContent() {
   const [search, setSearch] = useState("");
   const { t } = useLanguage();
 
-  const { data: storeSettings } = useQuery({
+  const { data: storeSettings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["store-settings-public"],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -66,14 +66,21 @@ function StoreContent() {
         <StoreHeader storeName={storeName} />
 
         <main>
-          {/* Hero Banner */}
-          <HeroBanner
-            storeName={storeName}
-            heroImageUrl={heroImageUrl}
-            heroImagePosition={heroImagePosition}
-            search={search}
-            onSearchChange={setSearch}
-          />
+          {/* Hero Banner - only show when settings are loaded */}
+          {!isLoadingSettings && (
+            <HeroBanner
+              storeName={storeName}
+              heroImageUrl={heroImageUrl}
+              heroImagePosition={heroImagePosition}
+              search={search}
+              onSearchChange={setSearch}
+            />
+          )}
+          {isLoadingSettings && (
+            <section className="relative min-h-[50vh] sm:min-h-[60vh] md:min-h-[70vh] flex items-center justify-center bg-muted/30">
+              <Loader2 className="h-12 w-12 animate-spin text-primary" />
+            </section>
+          )}
 
           {/* Products Section */}
           <section className="container mx-auto px-4 py-16">
