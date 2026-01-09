@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { LayoutDashboard, Package, ShoppingCart, Truck, Users, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Truck, Users, Settings, LogOut, Kanban } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
@@ -20,6 +20,10 @@ const navItems = [{
   icon: Truck,
   label: "Entregas",
   path: "/deliveries"
+}, {
+  icon: Kanban,
+  label: "Kanban",
+  path: "/kanban"
 }, {
   icon: Users,
   label: "Clientes",
