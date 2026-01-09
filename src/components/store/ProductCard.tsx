@@ -43,7 +43,7 @@ export function ProductCard({
   stock,
 }: ProductCardProps) {
   const { addItem } = useCartContext();
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { formatAmount } = useCurrencyContext();
   const [variants, setVariants] = useState<ProductVariant[]>([]);
   const [selectedVariant, setSelectedVariant] = useState<ProductVariant | null>(null);
@@ -86,7 +86,7 @@ export function ProductCard({
 
   const handleAddToCart = () => {
     if (hasVariants && !selectedVariant) {
-      toast.error(language === "pt" ? "Selecione uma variante" : "Selecciona una variante");
+      toast.error(t("product.selectVariant"));
       return;
     }
 
@@ -103,21 +103,18 @@ export function ProductCard({
     const variantInfo = selectedVariant 
       ? ` (${[selectedVariant.size, selectedVariant.color].filter(Boolean).join(" / ")})`
       : "";
-    const message = language === "pt" 
-      ? `${name}${variantInfo} adicionado ao carrinho` 
-      : `${name}${variantInfo} agregado al carrito`;
-    toast.success(message);
+    toast.success(`${name}${variantInfo} ${t("product.added")}`);
   };
 
   const getVariantLabel = (variant: ProductVariant) => {
     const parts = [];
     if (variant.size) parts.push(variant.size);
     if (variant.color) parts.push(variant.color);
-    return parts.join(" / ") || "Variante";
+    return parts.join(" / ") || t("product.selectVariant");
   };
 
-  const lastUnits = language === "pt" ? `Últimas ${currentStock}!` : `¡Últimas ${currentStock}!`;
-  const soldOut = language === "pt" ? "Esgotado" : "Agotado";
+  const lastUnits = `${t("product.lastUnits")} ${currentStock}!`;
+  const soldOut = t("product.soldOut");
 
   return (
     <div className="product-card group">
@@ -254,7 +251,7 @@ export function ProductCard({
               }}
             >
               <SelectTrigger className="h-9 text-sm">
-                <SelectValue placeholder="Seleccionar variante" />
+                <SelectValue placeholder={t("product.selectVariant")} />
               </SelectTrigger>
               <SelectContent>
                 {variants.map((variant) => (

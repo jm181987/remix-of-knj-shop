@@ -20,10 +20,18 @@ const translations: Record<Language, Record<string, string>> = {
     "store.buyAt": "Compra en",
     "store.qualityProducts": "Productos de calidad con Mercado Pago.",
     
+    // Hero
+    "hero.pricesIn": "Precios en",
+    "hero.pricesReference": "* Precios en $U son referenciales. El pago se realiza en R$",
+    
     // Product
     "product.addToCart": "Agregar al carrito",
     "product.outOfStock": "Sin stock",
     "product.pickupAvailable": "Retiro en tienda disponible",
+    "product.selectVariant": "Seleccionar variante",
+    "product.lastUnits": "¡Últimas",
+    "product.soldOut": "Agotado",
+    "product.added": "agregado al carrito",
     
     // Cart
     "cart.title": "Carrito",
@@ -59,6 +67,13 @@ const translations: Record<Language, Record<string, string>> = {
     "shipping.turil": "Turil Uruguay",
     "shipping.turilDesc": "Envío a Uruguay",
     
+    // Footer
+    "footer.paymentMethods": "Formas de Pago",
+    "footer.cards": "Tarjetas de Crédito y Débito",
+    "footer.contact": "Contacto",
+    "footer.socialMedia": "Redes Sociales",
+    "footer.developedBy": "Desarrollado por",
+    
     // WhatsApp
     "whatsapp.contact": "Contáctanos por WhatsApp",
     
@@ -78,10 +93,18 @@ const translations: Record<Language, Record<string, string>> = {
     "store.buyAt": "Compre em",
     "store.qualityProducts": "Produtos de qualidade com pagamento PIX.",
     
+    // Hero
+    "hero.pricesIn": "Preços em",
+    "hero.pricesReference": "* Preços em $U são referenciais. O pagamento é feito em R$",
+    
     // Product
     "product.addToCart": "Adicionar ao carrinho",
     "product.outOfStock": "Sem estoque",
     "product.pickupAvailable": "Retirada na loja disponível",
+    "product.selectVariant": "Selecionar variante",
+    "product.lastUnits": "Últimas",
+    "product.soldOut": "Esgotado",
+    "product.added": "adicionado ao carrinho",
     
     // Cart
     "cart.title": "Carrinho",
@@ -116,6 +139,13 @@ const translations: Record<Language, Record<string, string>> = {
     "shipping.sedexDesc": "Envio nacional Brasil",
     "shipping.turil": "Turil Uruguai",
     "shipping.turilDesc": "Envio para o Uruguai",
+    
+    // Footer
+    "footer.paymentMethods": "Formas de Pagamento",
+    "footer.cards": "Cartões de Crédito e Débito",
+    "footer.contact": "Contato",
+    "footer.socialMedia": "Redes Sociais",
+    "footer.developedBy": "Desenvolvido por",
     
     // WhatsApp
     "whatsapp.contact": "Entre em contato pelo WhatsApp",

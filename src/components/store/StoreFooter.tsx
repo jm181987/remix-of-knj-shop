@@ -9,7 +9,7 @@ interface StoreFooterProps {
 }
 
 export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
-  const { language } = useLanguage();
+  const { t } = useLanguage();
   const currentYear = new Date().getFullYear();
 
   const { data: footerSettings } = useQuery({
@@ -24,11 +24,10 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
     },
   });
 
-  const description = (footerSettings as any)?.footer_description || 
-    (language === "pt" 
-      ? "Moda fitness de qualidade para você treinar com estilo e conforto."
-      : "Moda fitness de calidad para entrenar con estilo y comodidad."
-    );
+  const defaultDescription = t("footer.paymentMethods") === "Formas de Pagamento" 
+    ? "Moda fitness de qualidade para você treinar com estilo e conforto."
+    : "Moda fitness de calidad para entrenar con estilo y comodidad.";
+  const description = (footerSettings as any)?.footer_description || defaultDescription;
 
   const location = (footerSettings as any)?.footer_location || "Rivera, Uruguay 🇺🇾";
   const instagramUrl = (footerSettings as any)?.footer_instagram || "https://instagram.com";
@@ -50,14 +49,14 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
           {/* Payment Methods */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">
-              {language === "pt" ? "Formas de Pagamento" : "Formas de Pago"}
+              {t("footer.paymentMethods")}
             </h3>
             <div className="space-y-3">
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-500/10">
                   <CreditCard className="h-4 w-4 text-blue-500" />
                 </div>
-                <span>{language === "pt" ? "Cartões de Crédito e Débito" : "Tarjetas de Crédito y Débito"}</span>
+                <span>{t("footer.cards")}</span>
               </div>
               <div className="flex items-center gap-3 text-sm text-muted-foreground">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-green-500/10">
@@ -78,7 +77,7 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
           {/* Contact */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">
-              {language === "pt" ? "Contato" : "Contacto"}
+              {t("footer.contact")}
             </h3>
             <div className="space-y-3">
               {whatsappNumber && (
@@ -106,7 +105,7 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
           {/* Social Media */}
           <div className="space-y-4">
             <h3 className="text-lg font-semibold text-foreground">
-              {language === "pt" ? "Redes Sociais" : "Redes Sociales"}
+              {t("footer.socialMedia")}
             </h3>
             <div className="flex gap-3">
               <a 
@@ -141,7 +140,7 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
         {/* Bottom */}
         <div className="flex flex-col items-center justify-between gap-4 text-center md:flex-row md:text-left">
           <p className="text-sm text-muted-foreground/60">
-            © {currentYear} {storeName}. {language === "pt" ? "Todos os direitos reservados." : "Todos los derechos reservados."}
+            © {currentYear} {storeName}. {t("store.rights")}
           </p>
           <div className="flex items-center gap-4 text-xs text-muted-foreground/50">
             <span>🇧🇷 Brasil</span>
@@ -159,7 +158,7 @@ export function StoreFooter({ storeName, whatsappNumber }: StoreFooterProps) {
               rel="noopener noreferrer"
               className="text-xs text-muted-foreground/40 hover:text-primary transition-colors"
             >
-              {language === "pt" ? "Desenvolvido por" : "Desarrollado por"} {developerName}
+              {t("footer.developedBy")} {developerName}
             </a>
           </div>
         )}
