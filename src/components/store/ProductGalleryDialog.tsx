@@ -63,7 +63,7 @@ export function ProductGalleryDialog({
             <img
               src={images[currentIndex]}
               alt={`${productName} - ${currentIndex + 1}`}
-              className="max-h-full max-w-full object-contain"
+              className="h-full w-auto object-contain"
             />
           </div>
 
