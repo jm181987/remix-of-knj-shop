@@ -74,8 +74,8 @@ serve(async (req) => {
 
     console.log(`Payment title: ${itemTitle}`);
 
-    // Get the app URL from environment or construct from Supabase URL
-    const appUrl = Deno.env.get("APP_URL") || "https://preview--algodon-uruguayo.lovable.app";
+    // Get the app URL from environment or use the correct project URL
+    const appUrl = Deno.env.get("APP_URL") || "https://id-preview--8a404393-e483-4060-9462-4fdf1615eb4b.lovable.app";
 
     // Create MercadoPago preference
     const preferenceData = {
